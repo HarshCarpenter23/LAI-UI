@@ -47,7 +47,6 @@ export interface Conversation {
   timestamp: Date;
 }
 
-// Demo conversation data
 const demoConversations: Conversation[] = [
   {
     id: "1",
@@ -73,8 +72,11 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
-  const [conversations, setConversations] = useState<Conversation[]>(demoConversations);
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [conversations, setConversations] =
+    useState<Conversation[]>(demoConversations);
+  const [activeConversationId, setActiveConversationId] = useState<
+    string | null
+  >(null);
   const location = useLocation();
 
   const handleLogout = () => {
@@ -85,10 +87,8 @@ export default function DashboardLayout() {
   const isActive = (href: string) =>
     location.pathname === href || location.pathname.startsWith(href + "/");
 
-  // Show conversations only on chat page
   const isOnChatPage = location.pathname === "/dashboard/chat";
 
-  // Generate user initials from email
   const userInitials =
     user?.email
       ?.split("@")[0]
@@ -97,17 +97,22 @@ export default function DashboardLayout() {
       .map((c) => c.toUpperCase())
       .join("") || "JD";
 
+  const sidebarWidth = collapsed ? 64 : 256;
+
   return (
-    <div className="h-screen bg-background flex">
-      {/* Sidebar */}
+    // Expose sidebar width as CSS variable so DashboardProjects fixed overlay can use it
+    <div
+      className="h-screen bg-background flex overflow-hidden"
+      style={{ "--sidebar-width": `${sidebarWidth}px` } as React.CSSProperties}
+    >
+      {/* ── Sidebar — flex item (not fixed), pushes content naturally ── */}
       <aside
-        className={`fixed left-0 top-0 h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 z-40 ${
+        className={`flex-shrink-0 h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 z-40 ${
           collapsed ? "w-16" : "w-64"
         }`}
       >
         {/* Logo & Collapse */}
         <div className="flex flex-col border-b border-sidebar-border">
-          {/* Logo */}
           <div
             className={`h-16 flex items-center px-4 ${collapsed ? "justify-center" : ""}`}
           >
@@ -120,7 +125,6 @@ export default function DashboardLayout() {
             )}
           </div>
 
-          {/* Collapse Toggle */}
           <div className="px-3 py-1">
             <button
               onClick={() => setCollapsed(!collapsed)}
@@ -182,7 +186,7 @@ export default function DashboardLayout() {
             </Link>
           ))}
 
-          {/* Conversations Section - Only show on chat page */}
+          {/* Conversations — chat page only */}
           {isOnChatPage && !collapsed && (
             <>
               <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-6 mb-3 px-3">
@@ -208,8 +212,12 @@ export default function DashboardLayout() {
                     onClick={() => setActiveConversationId(conv.id)}
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sidebar-foreground truncate">{conv.title}</p>
-                      <p className="text-muted-foreground truncate text-xs">{conv.preview}</p>
+                      <p className="font-medium text-sidebar-foreground truncate">
+                        {conv.title}
+                      </p>
+                      <p className="text-muted-foreground truncate text-xs">
+                        {conv.preview}
+                      </p>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -223,10 +231,11 @@ export default function DashboardLayout() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           onClick={() => {
-                            setConversations(conversations.filter((c) => c.id !== conv.id));
-                            if (activeConversationId === conv.id) {
+                            setConversations(
+                              conversations.filter((c) => c.id !== conv.id),
+                            );
+                            if (activeConversationId === conv.id)
                               setActiveConversationId(null);
-                            }
                           }}
                           className="text-destructive"
                         >
@@ -292,15 +301,21 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div
-        className={`flex-1 h-full flex flex-col transition-all duration-300 ${collapsed ? "ml-16" : "ml-64"}`}
+      {/* ── Main Content — flex-1, naturally sits to the right of sidebar ── */}
+      <main
+        className={`flex-1 min-w-0 h-full ${
+          isOnChatPage ? "overflow-hidden" : "overflow-auto p-6"
+        }`}
       >
-        {/* Page Content */}
-        <main className={`flex-1 h-full ${isOnChatPage ? "overflow-hidden p-0" : "overflow-auto p-6"}`}>
-          <Outlet context={{ activeConversationId, setActiveConversationId, conversations, setConversations }} />
-        </main>
-      </div>
+        <Outlet
+          context={{
+            activeConversationId,
+            setActiveConversationId,
+            conversations,
+            setConversations,
+          }}
+        />
+      </main>
     </div>
   );
 }

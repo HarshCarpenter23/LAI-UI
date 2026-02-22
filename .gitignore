@@ -5,4 +5,5 @@ node_modules/
 worker-configuration.d.ts
 .env
 .env.local
+.env.example
 .env.*.local

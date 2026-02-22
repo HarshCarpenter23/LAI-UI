@@ -11,20 +11,7 @@ import {
   Paperclip,
   Settings2,
 } from "lucide-react";
-import {
-  ProjectConversation,
-  ChatMessage,
-  ChatAttachment,
-  ProjectFile,
-} from "./types";
-
-// ── Mock AI responses ─────────────────────────────────────────────────────────
-const mockResponses = [
-  "I've analyzed the documents you uploaded. Here are the key findings for the wind energy due diligence:\n\n**Permit Status (BImSchG)**\n• The permit was issued on March 15, 2023 and is currently valid\n• Environmental impact assessment completed with minor conditions\n• Building permit aligned with local zoning requirements\n\n**Identified Risks**\n1. **Medium Risk**: Clause 4.2 of the land lease allows early termination with 12-month notice\n2. **Low Risk**: Grid connection agreement expires in 2035, requires renewal\n3. **High Risk**: Missing documentation for aviation lighting compliance\n\nWould you like me to elaborate on any of these findings?",
-  "Based on my analysis of the environmental impact assessment:\n\n**Wildlife Protection Measures**\n• Bat activity monitoring required during peak seasons (April–October)\n• Bird collision prevention shutdowns implemented during migration periods\n• Compensatory measures for habitat displacement are compliant\n\n**Compliance Status**: The project meets current BNatSchG requirements, but I recommend reviewing the latest amendments to ensure continued compliance.\n\nShall I generate a detailed risk matrix for these environmental factors?",
-  "I've reviewed the grid connection agreement (Einspeisezusage) with the following observations:\n\n**Key Terms**\n• Connection capacity: 45 MW at 110 kV level\n• Feed-in priority: Standard renewable energy priority applies\n• Duration: Valid until December 31, 2035\n\n**Risk Assessment**\n🟢 **Low Risk**: Current capacity allocation is sufficient\n🟡 **Medium Risk**: Renewal negotiations should begin by 2033\n🔴 **High Risk**: No backup connection agreement exists\n\nI recommend adding this to your due diligence checklist.",
-  "Here is a summary of the land lease agreement review:\n\n**Key Findings**\n• Total lease area: 12.4 hectares across 3 parcels\n• Lease term: 25 years with 2 optional 5-year extensions\n• Annual rent: €4,200/MW installed capacity\n\n**Critical Clauses**\n• Section 7.3: Force majeure clause is broadly drafted — may include regulatory changes\n• Section 12.1: Change of control provision requires landowner consent\n• Section 15: Decommissioning obligations are well-defined\n\nOverall assessment: The lease structure is standard for German wind projects. The change of control clause requires attention during M&A scenarios.",
-];
+import { ProjectConversation, ChatMessage, ChatAttachment } from "./types";
 
 // ── Typing indicator ──────────────────────────────────────────────────────────
 function TypingIndicator() {
@@ -48,7 +35,6 @@ function TypingIndicator() {
 interface ProjectChatViewProps {
   projectName: string;
   conversation: ProjectConversation;
-  projectFiles: ProjectFile[];
   onBack: () => void;
   onSendMessage: (message: string, attachments: ChatAttachment[]) => void;
 }
@@ -57,7 +43,6 @@ interface ProjectChatViewProps {
 export function ProjectChatView({
   projectName,
   conversation,
-  projectFiles,
   onBack,
   onSendMessage,
 }: ProjectChatViewProps) {
@@ -102,7 +87,6 @@ export function ProjectChatView({
     onSendMessage(text, attachments);
     setChatInput("");
     setAttachments([]);
-    // Reset textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
@@ -213,7 +197,7 @@ export function ProjectChatView({
       {/* ── FIXED INPUT AREA — flex-shrink-0, no extra scroll ── */}
       <div className="flex-shrink-0">
         <div className="max-w-4xl mx-auto w-full px-5 pt-3 pb-3">
-          {/* Attachment chips (shown above input when files selected) */}
+          {/* Attachment chips */}
           {attachments.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-2">
               {attachments.map((att) => (
@@ -236,9 +220,8 @@ export function ProjectChatView({
             </div>
           )}
 
-          {/* ── INPUT BOX — Image 1 style ── */}
+          {/* Input box */}
           <div className="bg-card/60 backdrop-blur rounded-2xl border border-border/50 shadow-sm">
-            {/* Main row: paperclip | textarea | mic + send */}
             <div className="flex items-center gap-2 px-3 pt-3 pb-2">
               {/* Paperclip left */}
               <button
@@ -249,7 +232,7 @@ export function ProjectChatView({
                 <Paperclip className="w-[18px] h-[18px]" />
               </button>
 
-              {/* Textarea — grows up to ~5 lines */}
+              {/* Textarea */}
               <textarea
                 ref={textareaRef}
                 className="flex-1 resize-none outline-none bg-transparent text-foreground placeholder-muted-foreground text-sm leading-relaxed min-h-[24px] max-h-[120px] py-0.5"
@@ -266,13 +249,11 @@ export function ProjectChatView({
                 disabled={isTyping}
               />
 
-              {/* Right actions: mic + send */}
+              {/* Right: mic + send */}
               <div className="flex items-center gap-1.5 flex-shrink-0">
-                {/* Mic */}
                 <button className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors">
                   <Mic className="w-[18px] h-[18px]" />
                 </button>
-                {/* Send — filled circle, blue, like Image 1 */}
                 <button
                   onClick={handleSend}
                   disabled={!canSend || isTyping}
@@ -287,7 +268,7 @@ export function ProjectChatView({
               </div>
             </div>
 
-            {/* Hint row below input */}
+            {/* Hint row */}
             <div className="flex items-center justify-between px-4 pb-2.5">
               <span className="flex items-center gap-1.5 text-xs text-muted-foreground/60">
                 <Settings2 className="w-3 h-3" />
@@ -324,12 +305,10 @@ function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.sender === "user";
   const isLong = message.message.length > 400;
 
-  // User bubble — right aligned
   if (isUser) {
     return (
       <div className="flex justify-end">
         <div className="max-w-[72%] space-y-1.5">
-          {/* Attachment chips above bubble */}
           {message.attachments && message.attachments.length > 0 && (
             <div className="flex flex-wrap gap-1.5 justify-end">
               {message.attachments.map((att) => (
@@ -361,7 +340,6 @@ function MessageBubble({ message }: MessageBubbleProps) {
     );
   }
 
-  // Assistant message — left aligned with avatar
   return (
     <div className="flex items-start gap-3">
       <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 mt-0.5">

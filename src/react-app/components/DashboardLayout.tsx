@@ -15,6 +15,7 @@ import {
   Plus,
   MoreVertical,
   Trash2,
+  Home,
 } from "lucide-react";
 import { Logo } from "@/react-app/components/Logo";
 import { useAuth } from "@/react-app/contexts/AuthContext";
@@ -29,6 +30,7 @@ import {
 import { Avatar, AvatarFallback } from "@/react-app/components/ui/avatar";
 
 const navigation = [
+  { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Chat", href: "/dashboard/chat", icon: MessageSquare },
   { name: "Documents", href: "/dashboard/documents", icon: FileText },
   { name: "Projects", href: "/dashboard/projects", icon: Folder },
@@ -84,8 +86,15 @@ export default function DashboardLayout() {
     navigate("/login");
   };
 
-  const isActive = (href: string) =>
-    location.pathname === href || location.pathname.startsWith(href + "/");
+  const isActive = (href: string) => {
+    // Exact match for /dashboard to avoid it lighting up on all sub-routes
+    if (href === "/dashboard") {
+      return location.pathname === "/dashboard";
+    }
+    return (
+      location.pathname === href || location.pathname.startsWith(href + "/")
+    );
+  };
 
   const isOnChatPage = location.pathname === "/dashboard/chat";
 
@@ -100,12 +109,11 @@ export default function DashboardLayout() {
   const sidebarWidth = collapsed ? 64 : 256;
 
   return (
-    // Expose sidebar width as CSS variable so DashboardProjects fixed overlay can use it
     <div
       className="h-screen bg-background flex overflow-hidden"
       style={{ "--sidebar-width": `${sidebarWidth}px` } as React.CSSProperties}
     >
-      {/* ── Sidebar — flex item (not fixed), pushes content naturally ── */}
+      {/* ── Sidebar — flex item, pushes content naturally ── */}
       <aside
         className={`flex-shrink-0 h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 z-40 ${
           collapsed ? "w-16" : "w-64"
@@ -143,10 +151,13 @@ export default function DashboardLayout() {
         {/* Main Navigation */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           <div
-            className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 ${collapsed ? "hidden" : "px-3"}`}
+            className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 ${
+              collapsed ? "hidden" : "px-3"
+            }`}
           >
             Main
           </div>
+
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -158,17 +169,22 @@ export default function DashboardLayout() {
               } ${collapsed ? "justify-center" : ""}`}
             >
               <item.icon
-                className={`w-5 h-5 flex-shrink-0 ${isActive(item.href) ? "" : "text-muted-foreground"}`}
+                className={`w-5 h-5 flex-shrink-0 ${
+                  isActive(item.href) ? "" : "text-muted-foreground"
+                }`}
               />
               {!collapsed && <span>{item.name}</span>}
             </Link>
           ))}
 
           <div
-            className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-6 mb-3 ${collapsed ? "hidden" : "px-3"}`}
+            className={`text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-6 mb-3 ${
+              collapsed ? "hidden" : "px-3"
+            }`}
           >
             Support
           </div>
+
           {secondaryNav.map((item) => (
             <Link
               key={item.name}
@@ -180,7 +196,9 @@ export default function DashboardLayout() {
               } ${collapsed ? "justify-center" : ""}`}
             >
               <item.icon
-                className={`w-5 h-5 flex-shrink-0 ${isActive(item.href) ? "" : "text-muted-foreground"}`}
+                className={`w-5 h-5 flex-shrink-0 ${
+                  isActive(item.href) ? "" : "text-muted-foreground"
+                }`}
               />
               {!collapsed && <span>{item.name}</span>}
             </Link>
@@ -253,12 +271,16 @@ export default function DashboardLayout() {
 
         {/* User Section */}
         <div
-          className={`p-3 border-t border-sidebar-border ${collapsed ? "flex justify-center" : ""}`}
+          className={`p-3 border-t border-sidebar-border ${
+            collapsed ? "flex justify-center" : ""
+          }`}
         >
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className={`flex items-center gap-3 w-full p-2 rounded-xl hover:bg-sidebar-accent transition-colors ${collapsed ? "justify-center" : ""}`}
+                className={`flex items-center gap-3 w-full p-2 rounded-xl hover:bg-sidebar-accent transition-colors ${
+                  collapsed ? "justify-center" : ""
+                }`}
               >
                 <Avatar className="w-9 h-9 border-2 border-primary/20">
                   <AvatarFallback className="bg-gradient-to-br from-primary to-indigo-600 text-white text-sm font-semibold">
@@ -301,7 +323,7 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* ── Main Content — flex-1, naturally sits to the right of sidebar ── */}
+      {/* ── Main Content ── */}
       <main
         className={`flex-1 min-w-0 h-full ${
           isOnChatPage ? "overflow-hidden" : "overflow-auto p-6"

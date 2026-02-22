@@ -21,12 +21,11 @@ import { ProjectConversationList } from "./ProjectConversationList";
 import { ProjectSidebar } from "./ProjectSidebar";
 import { ProjectChatView } from "./ProjectChatView";
 
-// Mock responses (same pool as ProjectChatView for consistency)
 const mockResponses = [
   "I've analyzed the documents you uploaded. Here are the key findings for the wind energy due diligence:\n\n**Permit Status (BImSchG)**\n• The permit was issued on March 15, 2023 and is currently valid\n• Environmental impact assessment completed with minor conditions\n• Building permit aligned with local zoning requirements\n\n**Identified Risks**\n1. **Medium Risk**: Clause 4.2 of the land lease allows early termination with 12-month notice\n2. **Low Risk**: Grid connection agreement expires in 2035, requires renewal\n3. **High Risk**: Missing documentation for aviation lighting compliance\n\nWould you like me to elaborate on any of these findings?",
   "Based on my analysis of the environmental impact assessment:\n\n**Wildlife Protection Measures**\n• Bat activity monitoring required during peak seasons (April–October)\n• Bird collision prevention shutdowns implemented during migration periods\n• Compensatory measures for habitat displacement are compliant\n\n**Compliance Status**: The project meets current BNatSchG requirements, but I recommend reviewing the latest amendments to ensure continued compliance.",
   "I've reviewed the grid connection agreement (Einspeisezusage) with the following observations:\n\n**Key Terms**\n• Connection capacity: 45 MW at 110 kV level\n• Feed-in priority: Standard renewable energy priority applies\n• Duration: Valid until December 31, 2035\n\n**Risk Assessment**\n🟢 **Low Risk**: Current capacity allocation is sufficient\n🟡 **Medium Risk**: Renewal negotiations should begin by 2033\n🔴 **High Risk**: No backup connection agreement exists",
-  "Here is a summary of the land lease agreement review:\n\n**Key Findings**\n• Total lease area: 12.4 hectares across 3 parcels\n• Lease term: 25 years with 2 optional 5-year extensions\n• Annual rent: €4,200/MW installed capacity\n\n**Critical Clauses**\n• Section 7.3: Force majeure clause is broadly drafted — may include regulatory changes\n• Section 12.1: Change of control provision requires landowner consent\n• Section 15: Decommissioning obligations are well-defined",
+  "Here is a summary of the land lease agreement review:\n\n**Key Findings**\n• Total lease area: 12.4 hectares across 3 parcels\n• Lease term: 25 years with 2 optional 5-year extensions\n• Annual rent: €4,200/MW installed capacity\n\n**Critical Clauses**\n• Section 7.3: Force majeure clause is broadly drafted\n• Section 12.1: Change of control provision requires landowner consent\n• Section 15: Decommissioning obligations are well-defined",
 ];
 
 interface ProjectDetailViewProps {
@@ -69,19 +68,18 @@ export function ProjectDetailView({
   const [newChatInput, setNewChatInput] = useState("");
   const [responseIdx, setResponseIdx] = useState(0);
 
-  // ── If a conversation is open, show full chat view ────────────────────────
   const openConversation = project.conversations.find(
     (c) => c.id === openConversationId,
   );
 
+  // ── Chat view ─────────────────────────────────────────────────────────────
   if (openConversationId && openConversation) {
     return (
-      // h-full — parent <main> controls the height, not us
       <div className="h-full flex flex-col bg-background overflow-hidden">
+        {/* ✅ FIX: removed projectFiles prop — no longer in ProjectChatViewProps */}
         <ProjectChatView
           projectName={project.name}
           conversation={openConversation}
-          projectFiles={project.files}
           onBack={() => setOpenConversationId(null)}
           onSendMessage={(msg, attachments) => {
             const aiResponse =
@@ -104,8 +102,7 @@ export function ProjectDetailView({
   const handleStartNewConversation = () => {
     if (!newChatInput.trim()) return;
 
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], {
+    const timeStr = new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -141,7 +138,7 @@ export function ProjectDetailView({
 
   return (
     <div className="h-full flex flex-col bg-background overflow-hidden">
-      {/* ── Top nav bar ── */}
+      {/* Top nav bar */}
       <div className="flex-shrink-0 h-11 flex items-center px-4 border-b border-border/50 bg-background/95 backdrop-blur">
         <button
           onClick={onBack}
@@ -152,11 +149,10 @@ export function ProjectDetailView({
         </button>
       </div>
 
-      {/* ── Main layout: left panel + right sidebar ── */}
+      {/* Main layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* ── LEFT PANEL ── */}
+        {/* LEFT PANEL */}
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-          {/* Project title */}
           <div className="flex items-center justify-between px-6 pt-5 pb-4 flex-shrink-0">
             <h1 className="text-2xl font-bold text-foreground tracking-tight">
               {project.name}
@@ -243,7 +239,7 @@ export function ProjectDetailView({
           />
         </div>
 
-        {/* ── RIGHT SIDEBAR ── */}
+        {/* RIGHT SIDEBAR */}
         <ProjectSidebar
           instructions={project.instructions}
           files={project.files}

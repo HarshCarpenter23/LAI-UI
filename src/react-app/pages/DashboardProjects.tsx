@@ -42,6 +42,7 @@ import {
   Project,
   ProjectConversation,
   ProjectFile,
+  ChatAttachment,
 } from "@/react-app/components/project/types";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -164,7 +165,7 @@ export default function DashboardProjectsPage() {
     projectId: string,
     conversationId: string,
     userMsg: string,
-    attachments: ProjectFile[] = [],
+    attachments: ChatAttachment[] = [],
     aiResponse = "This is an automated response.",
   ) => {
     const timeStr = new Date().toLocaleTimeString([], {

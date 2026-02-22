@@ -34,15 +34,15 @@ import {
 } from "@/react-app/components/ui/dropdown-menu";
 
 // Sub-components
-import { ProjectDetailView } from "./components/projects/ProjectDetailView";
+import { ProjectDetailView } from "@/react-app/components/project/ProjectDetailView";
 
 // Data & types
-import { INITIAL_PROJECTS } from "./components/projects/data";
+import { INITIAL_PROJECTS } from "@/react-app/components/project/data";
 import {
   Project,
   ProjectConversation,
   ProjectFile,
-} from "./components/projects/types";
+} from "@/react-app/components/project/types";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 

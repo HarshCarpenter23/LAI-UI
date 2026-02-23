@@ -1,13 +1,11 @@
 import { Link } from "react-router";
 import {
   ArrowRight,
-  CheckCircle2,
   Zap,
   Shield,
   Clock,
   BarChart3,
   FileSearch,
-  Brain,
   Wind,
   ChevronRight,
 } from "lucide-react";
@@ -23,12 +21,6 @@ const stats = [
 ];
 
 const features = [
-  {
-    icon: Brain,
-    title: "Harvey.ai Integration",
-    description:
-      "World-class legal AI capabilities tailored for German wind energy regulations",
-  },
   {
     icon: FileSearch,
     title: "Automated Document Analysis",
@@ -105,12 +97,7 @@ export default function LandingPage() {
               >
                 How it Works
               </a>
-              <a
-                href="#pricing"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Pricing
-              </a>
+              
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
@@ -267,35 +254,6 @@ export default function LandingPage() {
                 Join leading wind energy companies already using LAI to
                 accelerate their legal workflows.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link to="/signup">
-                  <Button size="lg" className="glow text-lg px-8 h-14">
-                    Start Free Trial
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="text-lg px-8 h-14"
-                >
-                  Schedule Demo
-                </Button>
-              </div>
-              <div className="flex items-center justify-center gap-6 mt-8 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  14-day free trial
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  No credit card required
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-primary" />
-                  Cancel anytime
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -306,9 +264,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <Logo size="sm" />
-            <p className="text-sm text-muted-foreground">
-              © 2024 LAI. Transforming legal AI for wind energy.
-            </p>
+            
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">
                 Privacy

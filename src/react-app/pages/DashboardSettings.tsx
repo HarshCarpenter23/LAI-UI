@@ -4,7 +4,6 @@ import {
   User,
   Bell,
   Lock,
-  CreditCard,
   Key,
   LogOut,
   Save,
@@ -116,7 +115,7 @@ export default function DashboardSettingsPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="w-4 h-4" />
             Profile
@@ -135,10 +134,6 @@ export default function DashboardSettingsPage() {
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Lock className="w-4 h-4" />
             Security
-          </TabsTrigger>
-          <TabsTrigger value="billing" className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4" />
-            Billing
           </TabsTrigger>
         </TabsList>
 
@@ -624,107 +619,6 @@ export default function DashboardSettingsPage() {
               >
                 Delete Account
               </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Billing Tab */}
-        <TabsContent value="billing" className="space-y-6">
-          <Card className="bg-card/50 backdrop-blur border-border/50">
-            <CardHeader className="pb-4">
-              <CardTitle>Subscription Plan</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-lg">Professional Plan</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      €99/month • 50 projects • Unlimited documents
-                    </p>
-                  </div>
-                  <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                    Active
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
-                <div className="p-3 rounded-lg bg-muted/30">
-                  <p className="text-sm text-muted-foreground">
-                    Next Billing Date
-                  </p>
-                  <p className="font-semibold mt-1">2024-03-20</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted/30">
-                  <p className="text-sm text-muted-foreground">Projects Used</p>
-                  <p className="font-semibold mt-1">8 / 50</p>
-                </div>
-                <div className="p-3 rounded-lg bg-muted/30">
-                  <p className="text-sm text-muted-foreground">Storage Used</p>
-                  <p className="font-semibold mt-1">12.3 GB</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <Button variant="outline">Change Plan</Button>
-                <Button variant="outline">Download Invoice</Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card/50 backdrop-blur border-border/50">
-            <CardHeader className="pb-4">
-              <CardTitle>Payment Method</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 rounded-lg bg-muted/30 border border-border/50 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <CreditCard className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="font-medium">Visa ending in 4242</p>
-                    <p className="text-sm text-muted-foreground">
-                      Expires 12/2025
-                    </p>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm">
-                  Edit
-                </Button>
-              </div>
-
-              <Button variant="outline">Add Payment Method</Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card/50 backdrop-blur border-border/50">
-            <CardHeader className="pb-4">
-              <CardTitle>Billing History</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {[
-                  { date: "2024-02-20", amount: "€99.00", status: "Paid" },
-                  { date: "2024-01-20", amount: "€99.00", status: "Paid" },
-                  { date: "2023-12-20", amount: "€99.00", status: "Paid" },
-                ].map((invoice) => (
-                  <div
-                    key={invoice.date}
-                    className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                  >
-                    <div>
-                      <p className="font-medium">{invoice.date}</p>
-                      <p className="text-sm text-muted-foreground">Invoice</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-semibold">{invoice.amount}</span>
-                      <span className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-500">
-                        {invoice.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </CardContent>
           </Card>
         </TabsContent>

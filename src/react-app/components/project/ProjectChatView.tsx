@@ -12,6 +12,7 @@ import {
   Settings2,
 } from "lucide-react";
 import { ProjectConversation, ChatMessage, ChatAttachment } from "./types";
+import { MarkdownRenderer } from "@/react-app/components/chat/MarkdownRenderer";
 
 // ── Typing indicator ──────────────────────────────────────────────────────────
 function TypingIndicator() {
@@ -96,7 +97,6 @@ export function ProjectChatView({
     setIsTyping(false);
   };
 
-  // Auto-grow textarea (max 5 lines ≈ 120px)
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setChatInput(e.target.value);
     e.target.style.height = "auto";
@@ -122,10 +122,9 @@ export function ProjectChatView({
 
   const canSend = chatInput.trim().length > 0 || attachments.length > 0;
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="h-full flex flex-col bg-background overflow-hidden">
-      {/* ── FIXED HEADER ── */}
+      {/* ── HEADER ── */}
       <div className="flex-shrink-0 h-10 border-b border-border/50 flex items-center justify-between px-5 bg-background/95 backdrop-blur">
         <div className="flex items-center gap-2 text-sm min-w-0">
           <button
@@ -152,13 +151,12 @@ export function ProjectChatView({
         </div>
       </div>
 
-      {/* ── SCROLLABLE MESSAGES — flex-1 min-h-0, ONLY this scrolls ── */}
+      {/* ── SCROLLABLE MESSAGES ── */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
         className="flex-1 w-full min-h-0 overflow-y-auto flex flex-col relative"
       >
-        {/* Empty state */}
         {conversation.messages.length === 0 && !isTyping && (
           <div className="flex-1 flex flex-col items-center justify-center py-12 px-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-indigo-400/20 flex items-center justify-center mb-4">
@@ -172,7 +170,6 @@ export function ProjectChatView({
           </div>
         )}
 
-        {/* Messages list */}
         {(conversation.messages.length > 0 || isTyping) && (
           <div className="max-w-4xl mx-auto w-full px-5 pt-5 pb-2 space-y-6">
             {conversation.messages.map((msg) => (
@@ -183,7 +180,6 @@ export function ProjectChatView({
           </div>
         )}
 
-        {/* Scroll to bottom button */}
         {showScrollBtn && (
           <button
             onClick={() => scrollToBottom("smooth")}
@@ -194,10 +190,9 @@ export function ProjectChatView({
         )}
       </div>
 
-      {/* ── FIXED INPUT AREA — flex-shrink-0, no extra scroll ── */}
+      {/* ── INPUT AREA ── */}
       <div className="flex-shrink-0">
         <div className="max-w-4xl mx-auto w-full px-5 pt-3 pb-3">
-          {/* Attachment chips */}
           {attachments.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-2">
               {attachments.map((att) => (
@@ -220,10 +215,8 @@ export function ProjectChatView({
             </div>
           )}
 
-          {/* Input box */}
           <div className="bg-card/60 backdrop-blur rounded-2xl border border-border/50 shadow-sm">
             <div className="flex items-center gap-2 px-3 pt-3 pb-2">
-              {/* Paperclip left */}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="flex-shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
@@ -232,7 +225,6 @@ export function ProjectChatView({
                 <Paperclip className="w-[18px] h-[18px]" />
               </button>
 
-              {/* Textarea */}
               <textarea
                 ref={textareaRef}
                 className="flex-1 resize-none outline-none bg-transparent text-foreground placeholder-muted-foreground text-sm leading-relaxed min-h-[24px] max-h-[120px] py-0.5"
@@ -249,7 +241,6 @@ export function ProjectChatView({
                 disabled={isTyping}
               />
 
-              {/* Right: mic + send */}
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <button className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors">
                   <Mic className="w-[18px] h-[18px]" />
@@ -268,7 +259,6 @@ export function ProjectChatView({
               </div>
             </div>
 
-            {/* Hint row */}
             <div className="flex items-center justify-between px-4 pb-2.5">
               <span className="flex items-center gap-1.5 text-xs text-muted-foreground/60">
                 <Settings2 className="w-3 h-3" />
@@ -281,7 +271,6 @@ export function ProjectChatView({
           </div>
         </div>
 
-        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           type="file"
@@ -305,6 +294,7 @@ function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.sender === "user";
   const isLong = message.message.length > 400;
 
+  // ── User bubble ───────────────────────────────────────────────────────────
   if (isUser) {
     return (
       <div className="flex justify-end">
@@ -328,6 +318,7 @@ function MessageBubble({ message }: MessageBubbleProps) {
             </div>
           )}
           <div className="bg-card border border-border/50 rounded-2xl rounded-br-sm px-4 py-3">
+            {/* ✅ User: always plain text */}
             <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
               {message.message}
             </p>
@@ -340,6 +331,7 @@ function MessageBubble({ message }: MessageBubbleProps) {
     );
   }
 
+  // ── Assistant bubble ──────────────────────────────────────────────────────
   return (
     <div className="flex items-start gap-3">
       <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -349,12 +341,12 @@ function MessageBubble({ message }: MessageBubbleProps) {
         <span className="text-xs text-muted-foreground font-medium">
           LAI Assistant
         </span>
+
         {isLong ? (
           <div className="bg-card/40 border border-border/30 rounded-xl rounded-tl-sm px-4 py-3 space-y-2">
-            <div
-              className={`text-sm text-foreground leading-relaxed whitespace-pre-wrap ${!expanded ? "line-clamp-6" : ""}`}
-            >
-              {message.message}
+            {/* ✅ Assistant long: markdown with collapse */}
+            <div className={!expanded ? "line-clamp-6 overflow-hidden" : ""}>
+              <MarkdownRenderer content={message.message} />
             </div>
             <button
               onClick={() => setExpanded((v) => !v)}
@@ -364,10 +356,12 @@ function MessageBubble({ message }: MessageBubbleProps) {
             </button>
           </div>
         ) : (
-          <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-            {message.message}
-          </p>
+          // ✅ Assistant short: markdown rendered directly
+          <div className="bg-card/40 border border-border/30 rounded-xl rounded-tl-sm px-4 py-3">
+            <MarkdownRenderer content={message.message} />
+          </div>
         )}
+
         <p className="text-xs text-muted-foreground/40">{message.timestamp}</p>
       </div>
     </div>

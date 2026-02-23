@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/react-app/components/ui/button";
 import { cn } from "@/react-app/lib/utils";
+import { MarkdownRenderer } from "@/react-app/components/chat/MarkdownRenderer";
 
 export interface ChatAttachment {
   id: string;
@@ -112,7 +113,7 @@ export function ChatMessage({ message, onRegenerate }: ChatMessageProps) {
           </div>
         )}
 
-        {/* Message Text */}
+        {/* Message bubble */}
         <div
           className={cn(
             "prose prose-sm dark:prose-invert max-w-none",
@@ -127,13 +128,19 @@ export function ChatMessage({ message, onRegenerate }: ChatMessageProps) {
                 : "bg-muted/50 rounded-tl-sm",
             )}
           >
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">
-              {message.content}
-            </p>
+            {isUser ? (
+              // ✅ User: plain text
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">
+                {message.content}
+              </p>
+            ) : (
+              // ✅ Assistant: rendered markdown
+              <MarkdownRenderer content={message.content} />
+            )}
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Actions — assistant only */}
         {!isUser && (
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button

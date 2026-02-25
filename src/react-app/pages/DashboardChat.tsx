@@ -58,12 +58,10 @@ interface OutletContextType {
 
 export default function DashboardChatPage() {
   const context = useOutletContext<OutletContextType>();
-  const {
-    activeConversationId,
-    conversations,
-    setConversations,
-    setActiveConversationId,
-  } = context || {};
+
+  // Only destructure what we use — fixes TS6133 "declared but never read" errors
+  // for setConversations and setActiveConversationId
+  const { activeConversationId, conversations } = context || {};
 
   const [messages, setMessages] = useState<ChatMessageData[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -71,6 +69,8 @@ export default function DashboardChatPage() {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
+  // Explicit generic required — TS5+ infers RefObject<HTMLTextAreaElement | null>
+  // which isn't assignable to the RefObject<HTMLTextAreaElement> the inputRef prop expects
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const responseIndexRef = useRef(0);
 
@@ -78,12 +78,10 @@ export default function DashboardChatPage() {
     (c) => c.id === activeConversationId,
   );
 
-  // ── Core scroll function — scrolls the container to absolute bottom ───────
+  // ── Core scroll ───────────────────────────────────────────────────────────
   const forceScrollToBottom = useCallback(
     (behavior: ScrollBehavior = "smooth") => {
-      // Method 1: scrollIntoView on anchor element
       bottomAnchorRef.current?.scrollIntoView({ behavior, block: "end" });
-      // Method 2: also set scrollTop directly as fallback
       const el = scrollContainerRef.current;
       if (el) el.scrollTo({ top: el.scrollHeight, behavior });
       setShowScrollBtn(false);
@@ -91,7 +89,7 @@ export default function DashboardChatPage() {
     [],
   );
 
-  // ── Show/hide scroll button ───────────────────────────────────────────────
+  // ── Show/hide scroll-to-bottom button ────────────────────────────────────
   const handleScroll = useCallback(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
@@ -99,14 +97,9 @@ export default function DashboardChatPage() {
     setShowScrollBtn(dist > 120);
   }, []);
 
-  // ── Auto-scroll whenever messages or typing state changes ─────────────────
-  // Uses setTimeout(0) to push scroll AFTER React has committed DOM changes.
-  // This is more reliable than useLayoutEffect + ref flag because it runs
-  // outside the render cycle entirely, guaranteeing DOM is fully updated.
+  // ── Auto-scroll on messages / typing change ───────────────────────────────
   useEffect(() => {
-    const timer = setTimeout(() => {
-      forceScrollToBottom("smooth");
-    }, 0);
+    const timer = setTimeout(() => forceScrollToBottom("smooth"), 0);
     return () => clearTimeout(timer);
   }, [messages.length, isTyping, forceScrollToBottom]);
 
@@ -132,8 +125,6 @@ export default function DashboardChatPage() {
 
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
-
-    // Force scroll immediately when user sends — don't wait for useEffect
     setTimeout(() => forceScrollToBottom("smooth"), 0);
 
     await new Promise((resolve) =>
@@ -151,12 +142,12 @@ export default function DashboardChatPage() {
     setIsTyping(false);
     setMessages((prev) => [...prev, aiMessage]);
 
-    // Auto-focus input so user is ready for next query
     setTimeout(() => inputRef.current?.focus(), 50);
   };
 
   const handleSuggestedPrompt = (prompt: string) =>
     handleSendMessage(prompt, []);
+
   const hasMessages = messages.length > 0;
 
   return (
@@ -190,6 +181,7 @@ export default function DashboardChatPage() {
         className="flex-1 w-full min-h-0 overflow-y-auto flex flex-col relative"
       >
         {!hasMessages && !activeConversationId ? (
+          /* Welcome screen — no conversation selected */
           <div className="flex-1 flex flex-col items-center justify-center py-16 px-4">
             <div className="flex items-center justify-center mb-6">
               <Logo size="lg" showText={false} />
@@ -220,6 +212,7 @@ export default function DashboardChatPage() {
             </div>
           </div>
         ) : !hasMessages && activeConversationId ? (
+          /* Conversation selected but no messages yet */
           <div className="flex-1 flex flex-col items-center justify-center py-16 px-4">
             <div className="flex items-center justify-center mb-4">
               <Logo size="lg" showText={false} />
@@ -231,6 +224,7 @@ export default function DashboardChatPage() {
             </p>
           </div>
         ) : (
+          /* Messages list */
           <div className="max-w-4xl mx-auto w-full px-4 py-4">
             {messages.map((message) => (
               <ChatMessage
@@ -240,12 +234,11 @@ export default function DashboardChatPage() {
               />
             ))}
             {isTyping && <TypingIndicator />}
-            {/* Anchor element at the very bottom — scrollIntoView target */}
             <div ref={bottomAnchorRef} style={{ height: 1 }} />
           </div>
         )}
 
-        {/* Scroll-to-bottom button */}
+        {/* Scroll-to-bottom floating button */}
         {showScrollBtn && hasMessages && (
           <button
             onClick={() => forceScrollToBottom("smooth")}

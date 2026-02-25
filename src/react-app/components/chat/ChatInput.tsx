@@ -30,7 +30,6 @@ export function ChatInput({
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const internalTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const textareaRef: RefObject<HTMLTextAreaElement | null> =
     inputRef ?? internalTextareaRef;
@@ -51,7 +50,7 @@ export function ChatInput({
     [textareaRef],
   );
 
-  const { micState, isSupported, toggleListening } = useSpeechRecognition({
+  const { micState, toggleListening } = useSpeechRecognition({
     onTranscript: handleTranscript,
   });
 

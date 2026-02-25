@@ -1,4 +1,10 @@
-import { useState, useRef, useCallback, KeyboardEvent, RefObject } from "react";
+import {
+  useState,
+  useRef,
+  useCallback,
+  KeyboardEvent,
+  RefObject,
+} from "react";
 import { Send, Paperclip, X, Mic, MicOff, Sparkles } from "lucide-react";
 import { Button } from "@/react-app/components/ui/button";
 import { Textarea } from "@/react-app/components/ui/textarea";
@@ -12,7 +18,7 @@ interface ChatInputProps {
   disabled?: boolean;
   placeholder?: string;
 
-  // ✅ FIX — MUST include | null
+  // ✅ FIX: Must include | null for TS5+ strict compatibility
   inputRef?: RefObject<HTMLTextAreaElement | null>;
 }
 
@@ -34,31 +40,32 @@ export function ChatInput({
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // ✅ MUST also include | null
+  // ✅ FIX: Explicitly include | null
   const internalTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  // ✅ Unified ref type
   const textareaRef: RefObject<HTMLTextAreaElement | null> =
     inputRef ?? internalTextareaRef;
 
-  const handleTranscript = useCallback(
-    (fullText: string) => {
-      setMessage(fullText);
-      requestAnimationFrame(() => {
-        if (textareaRef.current) {
-          textareaRef.current.style.height = "auto";
-          textareaRef.current.style.height =
-            Math.min(textareaRef.current.scrollHeight, 200) + "px";
-        }
-      });
-    },
-    [textareaRef],
-  );
+  // ── Speech recognition ──────────────────────────────────────────────
+  const handleTranscript = useCallback((fullText: string) => {
+    setMessage(fullText);
+
+    requestAnimationFrame(() => {
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height =
+          Math.min(textareaRef.current.scrollHeight, 200) + "px";
+      }
+    });
+  }, [textareaRef]);
 
   const { micState, errorMessage, isSupported, toggleListening } =
     useSpeechRecognition({ onTranscript: handleTranscript });
 
   const isListening = micState === "listening";
 
+  // ── Send ─────────────────────────────────────────────────────────────
   const handleSend = () => {
     if (!message.trim() && attachments.length === 0) return;
 
@@ -80,14 +87,19 @@ export function ChatInput({
     }
   };
 
+  // ── File handling ────────────────────────────────────────────────────
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
-    const newAttachments: ChatAttachment[] = Array.from(files).map((file) => ({
-      id: crypto.randomUUID(),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-    }));
+
+    const newAttachments: ChatAttachment[] = Array.from(files).map(
+      (file) => ({
+        id: crypto.randomUUID(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      }),
+    );
+
     setAttachments((prev) => [...prev, ...newAttachments]);
   };
 
@@ -110,10 +122,13 @@ export function ChatInput({
     handleFileSelect(e.dataTransfer.files);
   };
 
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTextareaChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
     setMessage(e.target.value);
     e.target.style.height = "auto";
-    e.target.style.height = Math.min(e.target.scrollHeight, 200) + "px";
+    e.target.style.height =
+      Math.min(e.target.scrollHeight, 200) + "px";
   };
 
   return (
@@ -129,9 +144,58 @@ export function ChatInput({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* KEEP ALL YOUR UI BELOW EXACTLY AS IS */}
-      {/* No functionality removed */}
-      {/* Your original JSX stays here */}
+      {/* Attachments */}
+      {attachments.length > 0 && (
+        <div className="p-3 pb-0 flex flex-wrap gap-2">
+          {attachments.map((file) => (
+            <div
+              key={file.id}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50 border border-border/50 group"
+            >
+              <ManuscriptIcon className="w-4 h-4 text-primary flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate max-w-[150px]">
+                  {file.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatFileSize(file.size)}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 opacity-50 group-hover:opacity-100"
+                onClick={() => removeAttachment(file.id)}
+              >
+                <X className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Input row */}
+      <div className="flex items-end gap-2 p-3">
+        <Textarea
+          ref={textareaRef}
+          value={message}
+          onChange={handleTextareaChange}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder || "Ask LAI..."}
+          disabled={disabled}
+          className="min-h-[44px] max-h-[200px] resize-none border-0 bg-transparent focus-visible:ring-0"
+          rows={1}
+        />
+
+        <Button
+          size="icon"
+          className="h-9 w-9"
+          onClick={handleSend}
+          disabled={disabled || (!message.trim() && attachments.length === 0)}
+        >
+          <Send className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 }

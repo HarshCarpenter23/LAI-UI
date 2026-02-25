@@ -83,19 +83,17 @@ export function useSpeechRecognition({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const recognitionRef   = useRef<ISpeechRecognition | null>(null);
-  const finalizedRef     = useRef("");    // all confirmed phrases this session
-  const baseTextRef      = useRef("");    // text already in box before mic started
-  const shouldRestartRef = useRef(false); // true = user hasn't stopped, keep going
+  const finalizedRef     = useRef("");
+  const baseTextRef      = useRef("");
+  const shouldRestartRef = useRef(false);
   const silenceTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // How long (ms) to keep listening after user goes silent before auto-stop
   const SILENCE_TIMEOUT_MS = 8000;
 
   const isSupported =
     typeof window !== "undefined" &&
     (window.SpeechRecognition != null || window.webkitSpeechRecognition != null);
 
-  // ── Clear silence timer ───────────────────────────────────────────────────
   const clearSilenceTimer = useCallback(() => {
     if (silenceTimerRef.current) {
       clearTimeout(silenceTimerRef.current);
@@ -103,7 +101,6 @@ export function useSpeechRecognition({
     }
   }, []);
 
-  // ── Reset silence timer ───────────────────────────────────────────────────
   const resetSilenceTimer = useCallback(
     (stopFn: () => void) => {
       clearSilenceTimer();
@@ -114,7 +111,6 @@ export function useSpeechRecognition({
     [clearSilenceTimer],
   );
 
-  // ── Cleanup on unmount ────────────────────────────────────────────────────
   useEffect(() => {
     return () => {
       clearSilenceTimer();
@@ -123,7 +119,6 @@ export function useSpeechRecognition({
     };
   }, [clearSilenceTimer]);
 
-  // ── Build & attach a recognition instance ────────────────────────────────
   const buildAndStart = useCallback((): ISpeechRecognition | undefined => {
     if (!isSupported) return undefined;
 
@@ -135,13 +130,9 @@ export function useSpeechRecognition({
     recognition.lang            = language;
     recognition.interimResults  = true;
     recognition.maxAlternatives = 1;
-    // continuous = false intentionally — avoids cumulative result bug.
-    // We manually restart on `onend` to simulate continuous listening
-    // while keeping each session's results clean (resultIndex always 0-based).
-    recognition.continuous = false;
+    recognition.continuous      = false;
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      // Reset silence timer — user is speaking, don't auto-stop yet
       resetSilenceTimer(() => {
         shouldRestartRef.current = false;
         recognitionRef.current?.stop();
@@ -167,7 +158,6 @@ export function useSpeechRecognition({
         interim = "";
       }
 
-      // Compose full text and push to parent
       const parts = [baseTextRef.current, finalizedRef.current, interim]
         .map((s) => s.trim())
         .filter(Boolean);
@@ -176,9 +166,7 @@ export function useSpeechRecognition({
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      // "aborted" = we called .abort() manually — not a real error
       if (event.error === "aborted") return;
-      // "no-speech" = handled by our own silence timer
       if (event.error === "no-speech") return;
 
       const messages: Record<string, string> = {
@@ -194,7 +182,6 @@ export function useSpeechRecognition({
     };
 
     recognition.onend = () => {
-      // If user hasn't explicitly stopped → restart to keep listening
       if (shouldRestartRef.current) {
         try {
           const next = buildAndStart();
@@ -223,7 +210,6 @@ export function useSpeechRecognition({
     return recognition;
   }, [isSupported, language, onTranscript, onEnd, resetSilenceTimer, clearSilenceTimer]);
 
-  // ── Start listening ───────────────────────────────────────────────────────
   const startListening = useCallback(
     (existingText: string) => {
       if (!isSupported) {
@@ -231,7 +217,6 @@ export function useSpeechRecognition({
         return;
       }
 
-      // Reset session state
       finalizedRef.current     = "";
       baseTextRef.current      = existingText.trim();
       shouldRestartRef.current = true;
@@ -239,8 +224,6 @@ export function useSpeechRecognition({
       setErrorMessage(null);
       setMicState("listening");
 
-      // Start silence timer from the beginning too —
-      // if user never speaks at all, stop after timeout
       const stopAll = () => {
         shouldRestartRef.current = false;
         recognitionRef.current?.stop();
@@ -254,7 +237,6 @@ export function useSpeechRecognition({
     [isSupported, buildAndStart, resetSilenceTimer, onEnd],
   );
 
-  // ── Stop listening ────────────────────────────────────────────────────────
   const stopListening = useCallback(() => {
     shouldRestartRef.current = false;
     clearSilenceTimer();
@@ -264,7 +246,6 @@ export function useSpeechRecognition({
     onEnd?.();
   }, [clearSilenceTimer, onEnd]);
 
-  // ── Toggle ────────────────────────────────────────────────────────────────
   const toggleListening = useCallback(
     (currentText = "") => {
       if (micState === "listening") {

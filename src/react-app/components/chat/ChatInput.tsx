@@ -12,7 +12,8 @@ interface ChatInputProps {
   disabled?: boolean;
   placeholder?: string;
   /** Optional ref forwarded from parent so it can call .focus() after answer */
-  inputRef?: RefObject<HTMLTextAreaElement>;
+  // Accept RefObject<HTMLTextAreaElement | null> — what useRef<T>(null) produces in TS5+
+  inputRef?: RefObject<HTMLTextAreaElement | null>;
 }
 
 function formatFileSize(bytes: number): string {
@@ -30,14 +31,16 @@ export function ChatInput({
   const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const internalTextareaRef = useRef<HTMLTextAreaElement>(null);
-  // Use parent-provided ref if given, otherwise internal one
-  const textareaRef = (inputRef ??
-    internalTextareaRef) as RefObject<HTMLTextAreaElement>;
+
+  // Use parent-provided ref if given, otherwise fall back to internal one.
+  // Both are now typed as RefObject<HTMLTextAreaElement | null> so no cast needed.
+  const textareaRef: RefObject<HTMLTextAreaElement | null> =
+    inputRef ?? internalTextareaRef;
 
   // ── Speech recognition ────────────────────────────────────────────────────
-  // The hook gives us the full composed text — just set it directly, no merging
   const handleTranscript = useCallback((fullText: string) => {
     setMessage(fullText);
     requestAnimationFrame(() => {
@@ -228,7 +231,7 @@ export function ChatInput({
         />
 
         <div className="flex items-center gap-1 flex-shrink-0">
-          {/* ── Mic button ── */}
+          {/* Mic button */}
           <Button
             variant="ghost"
             size="icon"
@@ -260,7 +263,7 @@ export function ChatInput({
             )}
           </Button>
 
-          {/* ── Send button ── */}
+          {/* Send button */}
           <Button
             size="icon"
             className="h-9 w-9 glow-sm"

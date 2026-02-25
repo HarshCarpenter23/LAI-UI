@@ -70,7 +70,7 @@ export default function DashboardChatPage() {
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
   // Explicit generic — TS5+ infers RefObject<HTMLTextAreaElement | null>
   // which isn't assignable to RefObject<HTMLTextAreaElement> expected by inputRef prop
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const responseIndexRef = useRef(0);
 
   const activeConversation = conversations?.find(

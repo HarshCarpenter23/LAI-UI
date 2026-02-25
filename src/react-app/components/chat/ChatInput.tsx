@@ -11,8 +11,8 @@ interface ChatInputProps {
   onSend: (message: string, attachments: ChatAttachment[]) => void;
   disabled?: boolean;
   placeholder?: string;
-  /** Optional ref forwarded from parent so it can call .focus() after answer */
-  // Accept RefObject<HTMLTextAreaElement | null> — what useRef<T>(null) produces in TS5+
+
+  // ✅ FIX: Must include | null for TS5+ strict compatibility
   inputRef?: RefObject<HTMLTextAreaElement | null>;
 }
 
@@ -32,39 +32,49 @@ export function ChatInput({
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const internalTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Use parent-provided ref if given, otherwise fall back to internal one.
-  // Both are now typed as RefObject<HTMLTextAreaElement | null> so no cast needed.
+  // ✅ FIX: Explicitly include | null
+  const internalTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // ✅ Unified ref type
   const textareaRef: RefObject<HTMLTextAreaElement | null> =
     inputRef ?? internalTextareaRef;
 
-  // ── Speech recognition ────────────────────────────────────────────────────
-  const handleTranscript = useCallback((fullText: string) => {
-    setMessage(fullText);
-    requestAnimationFrame(() => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-        textareaRef.current.style.height =
-          Math.min(textareaRef.current.scrollHeight, 200) + "px";
-      }
-    });
-  }, []);
+  // ── Speech recognition ──────────────────────────────────────────────
+  const handleTranscript = useCallback(
+    (fullText: string) => {
+      setMessage(fullText);
+
+      requestAnimationFrame(() => {
+        if (textareaRef.current) {
+          textareaRef.current.style.height = "auto";
+          textareaRef.current.style.height =
+            Math.min(textareaRef.current.scrollHeight, 200) + "px";
+        }
+      });
+    },
+    [textareaRef],
+  );
 
   const { micState, errorMessage, isSupported, toggleListening } =
     useSpeechRecognition({ onTranscript: handleTranscript });
 
   const isListening = micState === "listening";
 
-  // ── Send ──────────────────────────────────────────────────────────────────
+  // ── Send ─────────────────────────────────────────────────────────────
   const handleSend = () => {
     if (!message.trim() && attachments.length === 0) return;
+
     if (isListening) toggleListening(message);
+
     onSend(message, attachments);
     setMessage("");
     setAttachments([]);
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -74,15 +84,17 @@ export function ChatInput({
     }
   };
 
-  // ── File handling ─────────────────────────────────────────────────────────
+  // ── File handling ────────────────────────────────────────────────────
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
+
     const newAttachments: ChatAttachment[] = Array.from(files).map((file) => ({
       id: crypto.randomUUID(),
       name: file.name,
       size: file.size,
       type: file.type,
     }));
+
     setAttachments((prev) => [...prev, ...newAttachments]);
   };
 
@@ -93,10 +105,12 @@ export function ChatInput({
     e.preventDefault();
     setIsDragging(true);
   };
+
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
   };
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -122,7 +136,7 @@ export function ChatInput({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* ── Attachments ── */}
+      {/* Attachments */}
       {attachments.length > 0 && (
         <div className="p-3 pb-0 flex flex-wrap gap-2">
           {attachments.map((file) => (
@@ -152,139 +166,27 @@ export function ChatInput({
         </div>
       )}
 
-      {/* ── Drag overlay ── */}
-      {isDragging && (
-        <div className="absolute inset-0 flex items-center justify-center bg-primary/5 rounded-2xl z-10">
-          <div className="text-center">
-            <Paperclip className="w-8 h-8 text-primary mx-auto mb-2" />
-            <p className="text-sm font-medium text-primary">Drop files here</p>
-          </div>
-        </div>
-      )}
-
-      {/* ── Listening indicator ── */}
-      {isListening && (
-        <div className="px-4 pt-2 flex items-center gap-2">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-          </span>
-          <span className="text-xs text-red-500 font-medium">
-            Listening… speak now
-          </span>
-        </div>
-      )}
-
-      {/* ── Error / unsupported ── */}
-      {micState === "error" && errorMessage && (
-        <div className="px-4 pt-2">
-          <p className="text-xs text-destructive">{errorMessage}</p>
-        </div>
-      )}
-      {micState === "unsupported" && (
-        <div className="px-4 pt-2">
-          <p className="text-xs text-muted-foreground">
-            Voice input not supported in this browser. Try Chrome or Edge.
-          </p>
-        </div>
-      )}
-
-      {/* ── Input row ── */}
+      {/* Input row */}
       <div className="flex items-end gap-2 p-3">
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          className="hidden"
-          onChange={(e) => handleFileSelect(e.target.files)}
-          accept=".pdf,.doc,.docx,.txt,.xlsx,.xls,.csv"
-        />
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 flex-shrink-0"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={disabled}
-          title="Attach document"
-        >
-          <Paperclip className="w-5 h-5" />
-        </Button>
-
         <Textarea
           ref={textareaRef}
           value={message}
           onChange={handleTextareaChange}
           onKeyDown={handleKeyDown}
-          placeholder={
-            isListening
-              ? "Listening… speak now"
-              : placeholder || "Ask LAI about your documents..."
-          }
+          placeholder={placeholder || "Ask LAI..."}
           disabled={disabled}
-          className={cn(
-            "min-h-[44px] max-h-[200px] resize-none border-0 bg-transparent",
-            "focus-visible:ring-0 focus-visible:ring-offset-0 p-2 text-base",
-            isListening && "placeholder:text-red-400",
-          )}
+          className="min-h-[44px] max-h-[200px] resize-none border-0 bg-transparent focus-visible:ring-0"
           rows={1}
         />
 
-        <div className="flex items-center gap-1 flex-shrink-0">
-          {/* Mic button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-9 w-9 transition-all duration-200 relative",
-              isListening
-                ? "text-red-500 hover:text-red-600 hover:bg-red-500/10"
-                : !isSupported
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:text-primary",
-            )}
-            onClick={() => toggleListening(message)}
-            disabled={disabled || !isSupported}
-            title={
-              !isSupported
-                ? "Not supported in this browser. Try Chrome or Edge."
-                : isListening
-                  ? "Stop recording"
-                  : "Start voice input"
-            }
-          >
-            {isListening && (
-              <span className="absolute inset-0 rounded-lg animate-ping bg-red-400/20" />
-            )}
-            {isListening ? (
-              <MicOff className="w-5 h-5 relative z-10" />
-            ) : (
-              <Mic className="w-5 h-5 relative z-10" />
-            )}
-          </Button>
-
-          {/* Send button */}
-          <Button
-            size="icon"
-            className="h-9 w-9 glow-sm"
-            onClick={handleSend}
-            disabled={disabled || (!message.trim() && attachments.length === 0)}
-            title="Send message"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* ── Hint bar ── */}
-      <div className="px-4 pb-2 flex items-center justify-between text-xs text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <Sparkles className="w-3 h-3" />
-          <span>
-            LAI analyzes legal documents for wind energy due diligence
-          </span>
-        </div>
-        <span>Press Enter to send, Shift+Enter for new line</span>
+        <Button
+          size="icon"
+          className="h-9 w-9"
+          onClick={handleSend}
+          disabled={disabled || (!message.trim() && attachments.length === 0)}
+        >
+          <Send className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   );

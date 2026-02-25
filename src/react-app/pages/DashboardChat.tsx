@@ -58,8 +58,6 @@ interface OutletContextType {
 
 export default function DashboardChatPage() {
   const context = useOutletContext<OutletContextType>();
-
-  // Only destructure what we use — fixes TS6133 "declared but never read" errors
   const { activeConversationId, conversations } = context || {};
 
   const [messages, setMessages] = useState<ChatMessageData[]>([]);
@@ -68,8 +66,6 @@ export default function DashboardChatPage() {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
-  // Explicit generic — TS5+ infers RefObject<HTMLTextAreaElement | null>
-  // which isn't assignable to RefObject<HTMLTextAreaElement> expected by inputRef prop
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const responseIndexRef = useRef(0);
 

@@ -1,11 +1,5 @@
-import {
-  useState,
-  useRef,
-  useCallback,
-  KeyboardEvent,
-  RefObject,
-} from "react";
-import { Send, Paperclip, X, Mic, MicOff, Sparkles } from "lucide-react";
+import { useState, useRef, useCallback, KeyboardEvent, RefObject } from "react";
+import { Send, X } from "lucide-react";
 import { Button } from "@/react-app/components/ui/button";
 import { Textarea } from "@/react-app/components/ui/textarea";
 import { cn } from "@/react-app/lib/utils";
@@ -17,8 +11,6 @@ interface ChatInputProps {
   onSend: (message: string, attachments: ChatAttachment[]) => void;
   disabled?: boolean;
   placeholder?: string;
-
-  // ✅ FIX: Must include | null for TS5+ strict compatibility
   inputRef?: RefObject<HTMLTextAreaElement | null>;
 }
 
@@ -39,29 +31,29 @@ export function ChatInput({
   const [isDragging, setIsDragging] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  // ✅ FIX: Explicitly include | null
   const internalTextareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  // ✅ Unified ref type
   const textareaRef: RefObject<HTMLTextAreaElement | null> =
     inputRef ?? internalTextareaRef;
 
   // ── Speech recognition ──────────────────────────────────────────────
-  const handleTranscript = useCallback((fullText: string) => {
-    setMessage(fullText);
+  const handleTranscript = useCallback(
+    (fullText: string) => {
+      setMessage(fullText);
 
-    requestAnimationFrame(() => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-        textareaRef.current.style.height =
-          Math.min(textareaRef.current.scrollHeight, 200) + "px";
-      }
-    });
-  }, [textareaRef]);
+      requestAnimationFrame(() => {
+        if (textareaRef.current) {
+          textareaRef.current.style.height = "auto";
+          textareaRef.current.style.height =
+            Math.min(textareaRef.current.scrollHeight, 200) + "px";
+        }
+      });
+    },
+    [textareaRef],
+  );
 
-  const { micState, errorMessage, isSupported, toggleListening } =
-    useSpeechRecognition({ onTranscript: handleTranscript });
+  const { micState, isSupported, toggleListening } = useSpeechRecognition({
+    onTranscript: handleTranscript,
+  });
 
   const isListening = micState === "listening";
 
@@ -91,14 +83,12 @@ export function ChatInput({
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
 
-    const newAttachments: ChatAttachment[] = Array.from(files).map(
-      (file) => ({
-        id: crypto.randomUUID(),
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      }),
-    );
+    const newAttachments: ChatAttachment[] = Array.from(files).map((file) => ({
+      id: crypto.randomUUID(),
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    }));
 
     setAttachments((prev) => [...prev, ...newAttachments]);
   };
@@ -122,13 +112,10 @@ export function ChatInput({
     handleFileSelect(e.dataTransfer.files);
   };
 
-  const handleTextareaChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
     e.target.style.height = "auto";
-    e.target.style.height =
-      Math.min(e.target.scrollHeight, 200) + "px";
+    e.target.style.height = Math.min(e.target.scrollHeight, 200) + "px";
   };
 
   return (

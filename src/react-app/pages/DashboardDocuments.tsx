@@ -1,18 +1,5 @@
 import { useState, useRef } from "react";
 import {
-  FileText,
-  Upload,
-  Download,
-  Trash2,
-  Search,
-  Filter,
-  Plus,
-  MoreVertical,
-  Calendar,
-  HardDrive,
-  Eye,
-} from "lucide-react";
-import {
   Card,
   CardContent,
   CardHeader,
@@ -26,6 +13,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/react-app/components/ui/dropdown-menu";
+import {
+  ManuscriptIcon,
+  UploadIcon,
+  DownloadIcon,
+  TrashIcon,
+  SearchIcon,
+  FilterIcon,
+  PlusIcon,
+  DotsVerticalIcon,
+  CalendarIcon,
+  StorageIcon,
+  LensIcon,
+  ArchiveIcon,
+} from "@/react-app/components/icons";
 
 interface Document {
   id: string;
@@ -103,47 +104,26 @@ export default function DashboardDocumentsPage() {
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
+    setDragActive(e.type === "dragenter" || e.type === "dragover");
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      processFiles(files);
-    }
+    if (e.dataTransfer.files?.length) processFiles(e.dataTransfer.files);
   };
 
-  const deleteDocument = (id: string) => {
-    setDocuments(documents.filter((doc) => doc.id !== id));
-  };
-
-  const downloadDocument = (name: string) => {
-    // Simulate download
-    console.log(`Downloading ${name}`);
-  };
-
-  const archiveDocument = (id: string) => {
+  const deleteDocument = (id: string) =>
+    setDocuments(documents.filter((d) => d.id !== id));
+  const downloadDocument = (name: string) => console.log(`Downloading ${name}`);
+  const archiveDocument = (id: string) =>
     setDocuments(
-      documents.map((doc) =>
-        doc.id === id ? { ...doc, status: "archived" } : doc,
-      ),
+      documents.map((d) => (d.id === id ? { ...d, status: "archived" } : d)),
     );
-  };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.currentTarget.files;
-    if (files && files.length > 0) {
-      processFiles(files);
-    }
-    // Reset the input so the same file can be selected again
+    if (e.currentTarget.files?.length) processFiles(e.currentTarget.files);
     e.currentTarget.value = "";
   };
 
@@ -154,17 +134,15 @@ export default function DashboardDocumentsPage() {
         name: file.name,
         size: file.size / (1024 * 1024),
         uploadDate: new Date().toISOString().split("T")[0],
-        type: file.type.split("/")[1].toUpperCase() || "File",
+        type: file.type.split("/")[1]?.toUpperCase() || "File",
         status: "pending",
         category: "Uncategorized",
       };
-      setDocuments((prevDocs) => [newDoc, ...prevDocs]);
+      setDocuments((prev) => [newDoc, ...prev]);
     });
   };
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
+  const triggerFileInput = () => fileInputRef.current?.click();
 
   const statusColor = {
     analyzed: "text-green-500 bg-green-500/10",
@@ -176,7 +154,7 @@ export default function DashboardDocumentsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Documents</h1>
@@ -185,12 +163,12 @@ export default function DashboardDocumentsPage() {
           </p>
         </div>
         <Button className="glow-sm" onClick={triggerFileInput}>
-          <Plus className="w-4 h-4 mr-2" />
+          <PlusIcon className="w-4 h-4 mr-2" />
           Upload Document
         </Button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-card/50 backdrop-blur border-border/50">
           <CardContent className="p-5">
@@ -200,7 +178,7 @@ export default function DashboardDocumentsPage() {
                 <p className="text-2xl font-bold mt-2">{documents.length}</p>
               </div>
               <div className="p-2.5 rounded-xl bg-primary/10">
-                <FileText className="w-5 h-5 text-primary" />
+                <ManuscriptIcon className="w-5 h-5 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -216,7 +194,7 @@ export default function DashboardDocumentsPage() {
                 </p>
               </div>
               <div className="p-2.5 rounded-xl bg-blue-500/10">
-                <HardDrive className="w-5 h-5 text-blue-500" />
+                <StorageIcon className="w-5 h-5 text-blue-500" />
               </div>
             </div>
           </CardContent>
@@ -232,14 +210,14 @@ export default function DashboardDocumentsPage() {
                 </p>
               </div>
               <div className="p-2.5 rounded-xl bg-green-500/10">
-                <Eye className="w-5 h-5 text-green-500" />
+                <LensIcon className="w-5 h-5 text-green-500" />
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Upload Area */}
+      {/* Upload Zone */}
       <Card
         className={`bg-card/50 backdrop-blur border-border/50 border-2 border-dashed transition-colors cursor-pointer ${
           dragActive ? "border-primary bg-primary/5" : ""
@@ -253,7 +231,7 @@ export default function DashboardDocumentsPage() {
         <CardContent className="p-8">
           <div className="flex flex-col items-center justify-center gap-4">
             <div className="p-4 rounded-xl bg-primary/10">
-              <Upload className="w-8 h-8 text-primary" />
+              <UploadIcon className="w-8 h-8 text-primary" />
             </div>
             <div className="text-center">
               <p className="font-semibold">Drag and drop files here</p>
@@ -274,7 +252,6 @@ export default function DashboardDocumentsPage() {
         </CardContent>
       </Card>
 
-      {/* Hidden File Input */}
       <input
         ref={fileInputRef}
         type="file"
@@ -284,10 +261,10 @@ export default function DashboardDocumentsPage() {
         style={{ display: "none" }}
       />
 
-      {/* Search and Filter */}
+      {/* Search & Filter */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+          <SearchIcon className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search documents..."
             className="pl-10"
@@ -298,7 +275,7 @@ export default function DashboardDocumentsPage() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
-              <Filter className="w-4 h-4 mr-2" />
+              <FilterIcon className="w-4 h-4 mr-2" />
               Status
             </Button>
           </DropdownMenuTrigger>
@@ -319,7 +296,7 @@ export default function DashboardDocumentsPage() {
         </DropdownMenu>
       </div>
 
-      {/* Documents Table */}
+      {/* Documents List */}
       <Card className="bg-card/50 backdrop-blur border-border/50">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">
@@ -330,7 +307,7 @@ export default function DashboardDocumentsPage() {
         <CardContent>
           {filteredDocuments.length === 0 ? (
             <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+              <ManuscriptIcon className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
               <p className="text-muted-foreground">No documents found</p>
             </div>
           ) : (
@@ -342,14 +319,14 @@ export default function DashboardDocumentsPage() {
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                      <FileText className="w-5 h-5 text-primary" />
+                      <ManuscriptIcon className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{doc.name}</p>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
                         <span>{doc.size.toFixed(1)} MB</span>
                         <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5" />
+                          <CalendarIcon className="w-3.5 h-3.5" />
                           {doc.uploadDate}
                         </span>
                         <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">
@@ -360,9 +337,7 @@ export default function DashboardDocumentsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                        statusColor[doc.status as keyof typeof statusColor]
-                      }`}
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor[doc.status]}`}
                     >
                       {doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}
                     </span>
@@ -373,27 +348,27 @@ export default function DashboardDocumentsPage() {
                           size="sm"
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <MoreVertical className="w-4 h-4" />
+                          <DotsVerticalIcon className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           onClick={() => downloadDocument(doc.name)}
                         >
-                          <Download className="w-4 h-4 mr-2" />
+                          <DownloadIcon className="w-4 h-4 mr-2" />
                           Download
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => archiveDocument(doc.id)}
                         >
-                          <FileText className="w-4 h-4 mr-2" />
+                          <ArchiveIcon className="w-4 h-4 mr-2" />
                           Archive
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => deleteDocument(doc.id)}
                           className="text-red-500"
                         >
-                          <Trash2 className="w-4 h-4 mr-2" />
+                          <TrashIcon className="w-4 h-4 mr-2" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>

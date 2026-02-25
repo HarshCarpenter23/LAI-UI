@@ -1,15 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  User,
-  Building2,
-  ArrowRight,
-  CheckCircle2,
-} from "lucide-react";
 import { Button } from "@/react-app/components/ui/button";
 import { Input } from "@/react-app/components/ui/input";
 import { Label } from "@/react-app/components/ui/label";
@@ -17,6 +7,16 @@ import { Checkbox } from "@/react-app/components/ui/checkbox";
 import { Logo } from "@/react-app/components/Logo";
 import { ThemeToggle } from "@/react-app/components/ThemeToggle";
 import { useAuth } from "@/react-app/contexts/AuthContext";
+import {
+  LensIcon,
+  LensOffIcon,
+  EnvelopeIcon,
+  PadlockIcon,
+  PersonIcon,
+  BuildingIcon,
+  ArrowRightIcon,
+  CheckRingIcon,
+} from "@/react-app/components/icons";
 
 const benefits = [
   "14-day free trial with full access",
@@ -40,15 +40,13 @@ export default function SignupPage() {
     agreeTerms: false,
   });
 
-  const handleChange = (field: string, value: string | boolean) => {
+  const handleChange = (field: string, value: string | boolean) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-
     try {
       await signup(formData.fullName, formData.email, formData.password);
       navigate("/dashboard");
@@ -63,24 +61,50 @@ export default function SignupPage() {
 
   const passwordStrength = () => {
     const { password } = formData;
-    if (password.length === 0) return { score: 0, label: "", color: "" };
+    if (!password.length) return { score: 0, label: "", color: "" };
     if (password.length < 6)
       return { score: 1, label: "Weak", color: "bg-red-500" };
     if (password.length < 10)
       return { score: 2, label: "Fair", color: "bg-yellow-500" };
-    if (password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)) {
+    if (password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/))
       return { score: 4, label: "Strong", color: "bg-blue-500" };
-    }
     return { score: 3, label: "Good", color: "bg-indigo-500" };
   };
 
   const strength = passwordStrength();
 
+  // Shared input fields config
+  const fields = [
+    {
+      id: "fullName",
+      label: "Full name",
+      type: "text",
+      Icon: PersonIcon,
+      placeholder: "John Doe",
+      field: "fullName",
+    },
+    {
+      id: "email",
+      label: "Work email",
+      type: "email",
+      Icon: EnvelopeIcon,
+      placeholder: "name@company.com",
+      field: "email",
+    },
+    {
+      id: "company",
+      label: "Company name",
+      type: "text",
+      Icon: BuildingIcon,
+      placeholder: "Acme Inc.",
+      field: "company",
+    },
+  ] as const;
+
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Left Panel - Form */}
+      {/* Left Panel — Form */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
         <div className="flex items-center justify-between p-6">
           <Link to="/">
             <Logo size="sm" />
@@ -99,7 +123,6 @@ export default function SignupPage() {
           </div>
         </div>
 
-        {/* Form */}
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="w-full max-w-md space-y-8">
             <div className="text-center lg:text-left">
@@ -114,58 +137,32 @@ export default function SignupPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full name</Label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="fullName"
-                      type="text"
-                      placeholder="John Doe"
-                      value={formData.fullName}
-                      onChange={(e) => handleChange("fullName", e.target.value)}
-                      className="pl-11 h-12 rounded-xl"
-                      required
-                    />
+                {/* Standard text/email fields */}
+                {fields.map(({ id, label, type, Icon, placeholder, field }) => (
+                  <div key={id} className="space-y-2">
+                    <Label htmlFor={id}>{label}</Label>
+                    <div className="relative">
+                      <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id={id}
+                        type={type}
+                        placeholder={placeholder}
+                        value={
+                          formData[field as keyof typeof formData] as string
+                        }
+                        onChange={(e) => handleChange(field, e.target.value)}
+                        className="pl-11 h-12 rounded-xl"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
+                ))}
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Work email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="name@company.com"
-                      value={formData.email}
-                      onChange={(e) => handleChange("email", e.target.value)}
-                      className="pl-11 h-12 rounded-xl"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="company">Company name</Label>
-                  <div className="relative">
-                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="company"
-                      type="text"
-                      placeholder="Acme Inc."
-                      value={formData.company}
-                      onChange={(e) => handleChange("company", e.target.value)}
-                      className="pl-11 h-12 rounded-xl"
-                      required
-                    />
-                  </div>
-                </div>
-
+                {/* Password */}
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <PadlockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -181,9 +178,9 @@ export default function SignupPage() {
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
+                        <LensOffIcon className="w-4 h-4" />
                       ) : (
-                        <Eye className="w-4 h-4" />
+                        <LensIcon className="w-4 h-4" />
                       )}
                     </button>
                   </div>
@@ -193,9 +190,7 @@ export default function SignupPage() {
                         {[1, 2, 3, 4].map((i) => (
                           <div
                             key={i}
-                            className={`h-1 flex-1 rounded-full transition-colors ${
-                              i <= strength.score ? strength.color : "bg-muted"
-                            }`}
+                            className={`h-1 flex-1 rounded-full transition-colors ${i <= strength.score ? strength.color : "bg-muted"}`}
                           />
                         ))}
                       </div>
@@ -212,8 +207,8 @@ export default function SignupPage() {
                 <Checkbox
                   id="terms"
                   checked={formData.agreeTerms}
-                  onCheckedChange={(checked) =>
-                    handleChange("agreeTerms", checked as boolean)
+                  onCheckedChange={(c) =>
+                    handleChange("agreeTerms", c as boolean)
                   }
                   className="mt-0.5"
                 />
@@ -238,16 +233,15 @@ export default function SignupPage() {
                 disabled={!formData.agreeTerms || isLoading}
               >
                 {isLoading ? "Creating account..." : "Create account"}
-                <ArrowRight className="ml-2 w-4 h-4" />
+                <ArrowRightIcon className="ml-2 w-4 h-4" />
               </Button>
             </form>
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Benefits */}
+      {/* Right Panel — Benefits */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-bl from-primary/20 via-indigo-500/10 to-blue-500/20" />
         <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
@@ -269,7 +263,7 @@ export default function SignupPage() {
               {benefits.map((benefit) => (
                 <div key={benefit} className="flex items-center gap-3">
                   <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <CheckRingIcon className="w-4 h-4 text-primary" />
                   </div>
                   <span className="text-foreground">{benefit}</span>
                 </div>

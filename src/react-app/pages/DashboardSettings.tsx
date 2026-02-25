@@ -1,26 +1,5 @@
 import { useState } from "react";
 import {
-  Settings,
-  User,
-  Bell,
-  Lock,
-  Key,
-  LogOut,
-  Save,
-  Eye,
-  EyeOff,
-  Moon,
-  Sun,
-  Mail,
-  Phone,
-  MapPin,
-  Building,
-  Edit2,
-  Check,
-  X,
-  Shield,
-} from "lucide-react";
-import {
   Card,
   CardContent,
   CardHeader,
@@ -37,8 +16,38 @@ import {
 import { Switch } from "@/react-app/components/ui/switch";
 import { Label } from "@/react-app/components/ui/label";
 import { Textarea } from "@/react-app/components/ui/textarea";
+import { useTheme } from "@/react-app/contexts/ThemeContext";
+import {
+  GearIcon,
+  PersonIcon,
+  BellIcon,
+  PadlockIcon,
+  KeyIcon,
+  ExitIcon,
+  SaveIcon,
+  LensIcon,
+  LensOffIcon,
+  MoonIcon,
+  SunIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+  PinIcon,
+  BuildingIcon,
+  EditIcon,
+  CheckIcon,
+  CloseIcon,
+  ShieldColumnIcon,
+} from "@/react-app/components/icons";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Auto icon — a small sun+moon split symbol for the "System" option
+// ─────────────────────────────────────────────────────────────────────────────
+
 
 export default function DashboardSettingsPage() {
+  // ── Real theme control — same hook used by ThemeToggle in the chat header ──
+  const { theme, setTheme } = useTheme();
+
   const [showPassword, setShowPassword] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -63,7 +72,6 @@ export default function DashboardSettingsPage() {
   });
 
   const [preferences, setPreferences] = useState({
-    theme: "dark" as "dark" | "light" | "auto",
     language: "en",
     dateFormat: "DD/MM/YYYY",
     timezone: "Europe/Berlin",
@@ -92,20 +100,54 @@ export default function DashboardSettingsPage() {
     setTimeout(() => setSaveSuccess(false), 3000);
   };
 
-  const handleNotificationChange = (key: keyof typeof notifications) => {
-    setNotifications((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
+  const handleNotificationChange = (key: keyof typeof notifications) =>
+    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const handleDeleteApiKey = (id: string) => {
-    setApiKeys(apiKeys.filter((key) => key.id !== id));
-  };
+  const handleDeleteApiKey = (id: string) =>
+    setApiKeys(apiKeys.filter((k) => k.id !== id));
+
+  // Theme options — value matches what useTheme / ThemeProvider expects
+  const themeOptions = [
+    { value: "light" as const, label: "Light", Icon: SunIcon },
+    { value: "dark" as const, label: "Dark", Icon: MoonIcon },
+    
+  ];
+
+  const notificationItems = [
+    {
+      key: "emailNotifications" as const,
+      label: "Email Notifications",
+      description: "Receive notifications via email",
+    },
+    {
+      key: "riskAlerts" as const,
+      label: "Risk Alerts",
+      description: "Get notified about new risk assessments",
+    },
+    {
+      key: "documentUpdates" as const,
+      label: "Document Updates",
+      description: "Notifications when documents are processed",
+    },
+    {
+      key: "weeklyReport" as const,
+      label: "Weekly Report",
+      description: "Receive weekly summary reports",
+    },
+    {
+      key: "projectUpdates" as const,
+      label: "Project Updates",
+      description: "Updates on project progress and status",
+    },
+    {
+      key: "teamInvites" as const,
+      label: "Team Invites",
+      description: "Notifications about team collaboration invites",
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold">Settings</h1>
         <p className="text-muted-foreground">
@@ -113,41 +155,39 @@ export default function DashboardSettingsPage() {
         </p>
       </div>
 
-      {/* Tabs */}
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="w-4 h-4" />
+            <PersonIcon className="w-4 h-4" />
             Profile
           </TabsTrigger>
           <TabsTrigger
             value="notifications"
             className="flex items-center gap-2"
           >
-            <Bell className="w-4 h-4" />
+            <BellIcon className="w-4 h-4" />
             Notifications
           </TabsTrigger>
           <TabsTrigger value="preferences" className="flex items-center gap-2">
-            <Settings className="w-4 h-4" />
+            <GearIcon className="w-4 h-4" />
             Preferences
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center gap-2">
-            <Lock className="w-4 h-4" />
+            <PadlockIcon className="w-4 h-4" />
             Security
           </TabsTrigger>
         </TabsList>
 
-        {/* Profile Tab */}
+        {/* ── Profile ── */}
         <TabsContent value="profile" className="space-y-6">
           {saveSuccess && (
             <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center gap-3">
-              <Check className="w-5 h-5 text-green-500" />
+              <CheckIcon className="w-5 h-5 text-green-500" />
               <span className="text-green-700">
                 Profile updated successfully!
               </span>
             </div>
           )}
-
           <Card className="bg-card/50 backdrop-blur border-border/50">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <CardTitle>Profile Information</CardTitle>
@@ -158,12 +198,12 @@ export default function DashboardSettingsPage() {
               >
                 {editingProfile ? (
                   <>
-                    <X className="w-4 h-4 mr-2" />
+                    <CloseIcon className="w-4 h-4 mr-2" />
                     Cancel
                   </>
                 ) : (
                   <>
-                    <Edit2 className="w-4 h-4 mr-2" />
+                    <EditIcon className="w-4 h-4 mr-2" />
                     Edit
                   </>
                 )}
@@ -172,7 +212,7 @@ export default function DashboardSettingsPage() {
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-indigo-500 flex items-center justify-center">
-                  <User className="w-8 h-8 text-white" />
+                  <PersonIcon className="w-8 h-8 text-white" />
                 </div>
                 {editingProfile && (
                   <Button variant="outline" size="sm">
@@ -180,130 +220,85 @@ export default function DashboardSettingsPage() {
                   </Button>
                 )}
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground mb-2 block">
-                    First Name
-                  </Label>
-                  <Input
-                    value={profile.firstName}
-                    disabled={!editingProfile}
-                    onChange={(e) =>
-                      setProfile((prev) => ({
-                        ...prev,
-                        firstName: e.target.value,
-                      }))
-                    }
-                    className="bg-muted/50"
-                  />
-                </div>
-                <div>
-                  <Label className="text-muted-foreground mb-2 block">
-                    Last Name
-                  </Label>
-                  <Input
-                    value={profile.lastName}
-                    disabled={!editingProfile}
-                    onChange={(e) =>
-                      setProfile((prev) => ({
-                        ...prev,
-                        lastName: e.target.value,
-                      }))
-                    }
-                    className="bg-muted/50"
-                  />
-                </div>
-                <div>
-                  <Label className="text-muted-foreground mb-2 block flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    Email
-                  </Label>
-                  <Input
-                    type="email"
-                    value={profile.email}
-                    disabled={!editingProfile}
-                    onChange={(e) =>
-                      setProfile((prev) => ({
-                        ...prev,
-                        email: e.target.value,
-                      }))
-                    }
-                    className="bg-muted/50"
-                  />
-                </div>
-                <div>
-                  <Label className="text-muted-foreground mb-2 block flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    Phone
-                  </Label>
-                  <Input
-                    type="tel"
-                    value={profile.phone}
-                    disabled={!editingProfile}
-                    onChange={(e) =>
-                      setProfile((prev) => ({
-                        ...prev,
-                        phone: e.target.value,
-                      }))
-                    }
-                    className="bg-muted/50"
-                  />
-                </div>
-                <div>
-                  <Label className="text-muted-foreground mb-2 block flex items-center gap-2">
-                    <Building className="w-4 h-4" />
-                    Company
-                  </Label>
-                  <Input
-                    value={profile.company}
-                    disabled={!editingProfile}
-                    onChange={(e) =>
-                      setProfile((prev) => ({
-                        ...prev,
-                        company: e.target.value,
-                      }))
-                    }
-                    className="bg-muted/50"
-                  />
-                </div>
-                <div>
-                  <Label className="text-muted-foreground mb-2 block">
-                    Job Title
-                  </Label>
-                  <Input
-                    value={profile.jobTitle}
-                    disabled={!editingProfile}
-                    onChange={(e) =>
-                      setProfile((prev) => ({
-                        ...prev,
-                        jobTitle: e.target.value,
-                      }))
-                    }
-                    className="bg-muted/50"
-                  />
-                </div>
+                {[
+                  {
+                    id: "firstName",
+                    label: "First Name",
+                    Icon: null,
+                    value: profile.firstName,
+                    field: "firstName",
+                  },
+                  {
+                    id: "lastName",
+                    label: "Last Name",
+                    Icon: null,
+                    value: profile.lastName,
+                    field: "lastName",
+                  },
+                  {
+                    id: "email",
+                    label: "Email",
+                    Icon: EnvelopeIcon,
+                    value: profile.email,
+                    field: "email",
+                  },
+                  {
+                    id: "phone",
+                    label: "Phone",
+                    Icon: PhoneIcon,
+                    value: profile.phone,
+                    field: "phone",
+                  },
+                  {
+                    id: "company",
+                    label: "Company",
+                    Icon: BuildingIcon,
+                    value: profile.company,
+                    field: "company",
+                  },
+                  {
+                    id: "jobTitle",
+                    label: "Job Title",
+                    Icon: null,
+                    value: profile.jobTitle,
+                    field: "jobTitle",
+                  },
+                ].map(({ id, label, Icon, value, field }) => (
+                  <div key={id}>
+                    <Label className="text-muted-foreground mb-2 flex items-center gap-2">
+                      {Icon && <Icon className="w-4 h-4" />}
+                      {label}
+                    </Label>
+                    <Input
+                      value={value}
+                      disabled={!editingProfile}
+                      onChange={(e) =>
+                        setProfile((prev) => ({
+                          ...prev,
+                          [field]: e.target.value,
+                        }))
+                      }
+                      className="bg-muted/50"
+                    />
+                  </div>
+                ))}
               </div>
-
               <div>
                 <Label className="text-muted-foreground mb-2 block">Bio</Label>
                 <Textarea
                   value={profile.bio}
                   disabled={!editingProfile}
                   onChange={(e) =>
-                    setProfile((prev) => ({
-                      ...prev,
-                      bio: e.target.value,
-                    }))
+                    setProfile((prev) => ({ ...prev, bio: e.target.value }))
                   }
                   className="bg-muted/50"
                   rows={4}
                 />
               </div>
-
               {editingProfile && (
                 <Button onClick={handleProfileSave} className="glow-sm">
-                  <Save className="w-4 h-4 mr-2" />
+                  <SaveIcon className="w-4 h-4 mr-2" />
                   Save Changes
                 </Button>
               )}
@@ -311,45 +306,14 @@ export default function DashboardSettingsPage() {
           </Card>
         </TabsContent>
 
-        {/* Notifications Tab */}
+        {/* ── Notifications ── */}
         <TabsContent value="notifications" className="space-y-6">
           <Card className="bg-card/50 backdrop-blur border-border/50">
             <CardHeader className="pb-4">
               <CardTitle>Email Notifications</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {[
-                {
-                  key: "emailNotifications" as const,
-                  label: "Email Notifications",
-                  description: "Receive notifications via email",
-                },
-                {
-                  key: "riskAlerts" as const,
-                  label: "Risk Alerts",
-                  description: "Get notified about new risk assessments",
-                },
-                {
-                  key: "documentUpdates" as const,
-                  label: "Document Updates",
-                  description: "Notifications when documents are processed",
-                },
-                {
-                  key: "weeklyReport" as const,
-                  label: "Weekly Report",
-                  description: "Receive weekly summary reports",
-                },
-                {
-                  key: "projectUpdates" as const,
-                  label: "Project Updates",
-                  description: "Updates on project progress and status",
-                },
-                {
-                  key: "teamInvites" as const,
-                  label: "Team Invites",
-                  description: "Notifications about team collaboration invites",
-                },
-              ].map((item) => (
+              {notificationItems.map((item) => (
                 <div
                   key={item.key}
                   className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
@@ -370,47 +334,48 @@ export default function DashboardSettingsPage() {
           </Card>
         </TabsContent>
 
-        {/* Preferences Tab */}
+        {/* ── Preferences ── */}
         <TabsContent value="preferences" className="space-y-6">
           <Card className="bg-card/50 backdrop-blur border-border/50">
             <CardHeader className="pb-4">
               <CardTitle>Display & Localization</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* ── THEME — wired to useTheme, same as ThemeToggle ── */}
               <div>
-                <Label className="text-muted-foreground mb-2 block">
-                  Theme
+                <Label className="text-muted-foreground mb-3 block text-sm font-medium">
+                  Appearance
                 </Label>
                 <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { value: "light" as const, label: "Light", icon: Sun },
-                    { value: "dark" as const, label: "Dark", icon: Moon },
-                    { value: "auto" as const, label: "Auto", icon: Settings },
-                  ].map((theme) => {
-                    const IconComp = theme.icon;
+                  {themeOptions.map((opt) => {
+                    const isActive = theme === opt.value;
                     return (
                       <button
-                        key={theme.value}
-                        onClick={() =>
-                          setPreferences((prev) => ({
-                            ...prev,
-                            theme: theme.value,
-                          }))
-                        }
-                        className={`p-3 rounded-lg border-2 flex flex-col items-center gap-2 transition-colors ${
-                          preferences.theme === theme.value
-                            ? "border-primary bg-primary/10"
-                            : "border-border/50 hover:border-primary/50"
+                        key={opt.value}
+                        onClick={() => setTheme(opt.value)}
+                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2.5 transition-all ${
+                          isActive
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border/50 hover:border-primary/40 text-muted-foreground hover:text-foreground"
                         }`}
                       >
-                        <IconComp className="w-5 h-5" />
-                        <span className="text-sm">{theme.label}</span>
+                        <opt.Icon className="w-5 h-5" />
+                        <span className="text-sm font-medium">{opt.label}</span>
+                        {isActive && (
+                          <span className="text-xs text-primary/80 font-medium">
+                            Active
+                          </span>
+                        )}
                       </button>
                     );
                   })}
                 </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  "Auto" follows your system's dark/light mode setting.
+                </p>
               </div>
 
+              {/* Language */}
               <div>
                 <Label className="text-muted-foreground mb-2 block">
                   Language
@@ -418,10 +383,7 @@ export default function DashboardSettingsPage() {
                 <select
                   value={preferences.language}
                   onChange={(e) =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      language: e.target.value,
-                    }))
+                    setPreferences((p) => ({ ...p, language: e.target.value }))
                   }
                   className="w-full px-3 py-2 rounded-lg bg-muted/50 border border-border/50 text-foreground"
                 >
@@ -432,6 +394,7 @@ export default function DashboardSettingsPage() {
                 </select>
               </div>
 
+              {/* Date Format */}
               <div>
                 <Label className="text-muted-foreground mb-2 block">
                   Date Format
@@ -439,8 +402,8 @@ export default function DashboardSettingsPage() {
                 <select
                   value={preferences.dateFormat}
                   onChange={(e) =>
-                    setPreferences((prev) => ({
-                      ...prev,
+                    setPreferences((p) => ({
+                      ...p,
                       dateFormat: e.target.value,
                     }))
                   }
@@ -452,18 +415,16 @@ export default function DashboardSettingsPage() {
                 </select>
               </div>
 
+              {/* Timezone */}
               <div>
-                <Label className="text-muted-foreground mb-2 block flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
+                <Label className="text-muted-foreground mb-2 flex items-center gap-2">
+                  <PinIcon className="w-4 h-4" />
                   Timezone
                 </Label>
                 <select
                   value={preferences.timezone}
                   onChange={(e) =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      timezone: e.target.value,
-                    }))
+                    setPreferences((p) => ({ ...p, timezone: e.target.value }))
                   }
                   className="w-full px-3 py-2 rounded-lg bg-muted/50 border border-border/50 text-foreground"
                 >
@@ -475,14 +436,14 @@ export default function DashboardSettingsPage() {
               </div>
 
               <Button className="glow-sm">
-                <Save className="w-4 h-4 mr-2" />
+                <SaveIcon className="w-4 h-4 mr-2" />
                 Save Preferences
               </Button>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Security Tab */}
+        {/* ── Security ── */}
         <TabsContent value="security" className="space-y-6">
           <Card className="bg-card/50 backdrop-blur border-border/50">
             <CardHeader className="pb-4">
@@ -504,14 +465,13 @@ export default function DashboardSettingsPage() {
                     className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
+                      <LensOffIcon className="w-4 h-4" />
                     ) : (
-                      <Eye className="w-4 h-4" />
+                      <LensIcon className="w-4 h-4" />
                     )}
                   </button>
                 </div>
               </div>
-
               <div>
                 <Label className="text-muted-foreground mb-2 block">
                   New Password
@@ -522,7 +482,6 @@ export default function DashboardSettingsPage() {
                   className="bg-muted/50"
                 />
               </div>
-
               <div>
                 <Label className="text-muted-foreground mb-2 block">
                   Confirm Password
@@ -533,9 +492,8 @@ export default function DashboardSettingsPage() {
                   className="bg-muted/50"
                 />
               </div>
-
               <Button className="glow-sm">
-                <Lock className="w-4 h-4 mr-2" />
+                <PadlockIcon className="w-4 h-4 mr-2" />
                 Update Password
               </Button>
             </CardContent>
@@ -549,7 +507,6 @@ export default function DashboardSettingsPage() {
               <p className="text-sm text-muted-foreground">
                 Manage your API keys for third-party integrations
               </p>
-
               <div className="space-y-2">
                 {apiKeys.map((key) => (
                   <div
@@ -558,7 +515,7 @@ export default function DashboardSettingsPage() {
                   >
                     <div>
                       <p className="font-medium flex items-center gap-2">
-                        <Key className="w-4 h-4" />
+                        <KeyIcon className="w-4 h-4" />
                         {key.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -567,11 +524,7 @@ export default function DashboardSettingsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-xs px-2 py-1 rounded ${
-                          key.active
-                            ? "bg-green-500/20 text-green-500"
-                            : "bg-gray-500/20 text-gray-500"
-                        }`}
+                        className={`text-xs px-2 py-1 rounded ${key.active ? "bg-green-500/20 text-green-500" : "bg-gray-500/20 text-gray-500"}`}
                       >
                         {key.active ? "Active" : "Inactive"}
                       </span>
@@ -587,9 +540,8 @@ export default function DashboardSettingsPage() {
                   </div>
                 ))}
               </div>
-
               <Button variant="outline">
-                <Key className="w-4 h-4 mr-2" />
+                <KeyIcon className="w-4 h-4 mr-2" />
                 Generate New API Key
               </Button>
             </CardContent>
@@ -598,7 +550,7 @@ export default function DashboardSettingsPage() {
           <Card className="bg-red-500/5 border-red-500/20">
             <CardHeader className="pb-4">
               <CardTitle className="text-red-600 flex items-center gap-2">
-                <Shield className="w-5 h-5" />
+                <ShieldColumnIcon className="w-5 h-5" />
                 Danger Zone
               </CardTitle>
             </CardHeader>
@@ -610,7 +562,7 @@ export default function DashboardSettingsPage() {
                 variant="outline"
                 className="text-red-500 hover:text-red-600 border-red-500/20"
               >
-                <LogOut className="w-4 h-4 mr-2" />
+                <ExitIcon className="w-4 h-4 mr-2" />
                 Logout from All Devices
               </Button>
               <Button

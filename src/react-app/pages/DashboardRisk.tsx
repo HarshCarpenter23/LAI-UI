@@ -1,17 +1,5 @@
 import { useState } from "react";
 import {
-  BarChart3,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
-  TrendingUp,
-  Filter,
-  Search,
-  ArrowUpRight,
-  ArrowDownRight,
-  Clock,
-} from "lucide-react";
-import {
   Card,
   CardContent,
   CardHeader,
@@ -26,6 +14,18 @@ import {
   DropdownMenuTrigger,
 } from "@/react-app/components/ui/dropdown-menu";
 import { Progress } from "@/react-app/components/ui/progress";
+import {
+  SignalTowerIcon,
+  CheckRingIcon,
+  AlertIcon,
+  DangerRingIcon,
+  TrendUpIcon,
+  FilterIcon,
+  SearchIcon,
+  ArrowUpRightIcon,
+  ArrowDownRightIcon,
+  SandglassIcon,
+} from "@/react-app/components/icons";
 
 interface RiskArea {
   id: string;
@@ -112,11 +112,11 @@ export default function DashboardRiskPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRisk, setFilterRisk] = useState<string | null>(null);
 
-  const filteredRisks = riskAreas.filter((risk) => {
+  const filteredRisks = riskAreas.filter((r) => {
     const matchesSearch =
-      risk.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      risk.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = !filterRisk || risk.riskLevel === filterRisk;
+      r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = !filterRisk || r.riskLevel === filterRisk;
     return matchesSearch && matchesFilter;
   });
 
@@ -125,18 +125,16 @@ export default function DashboardRiskPage() {
     medium: riskAreas.filter((r) => r.riskLevel === "medium").length,
     high: riskAreas.filter((r) => r.riskLevel === "high").length,
   };
-
   const averageScore =
-    Math.round(
-      riskAreas.reduce((sum, r) => sum + r.score, 0) / riskAreas.length,
-    ) || 0;
+    Math.round(riskAreas.reduce((s, r) => s + r.score, 0) / riskAreas.length) ||
+    0;
 
   const riskConfig = {
     low: {
       color: "text-green-500",
       bg: "bg-green-500/10",
       border: "border-green-500/20",
-      icon: CheckCircle2,
+      Icon: CheckRingIcon,
       label: "Low Risk",
       bgIntense: "bg-green-500/20",
     },
@@ -144,7 +142,7 @@ export default function DashboardRiskPage() {
       color: "text-yellow-500",
       bg: "bg-yellow-500/10",
       border: "border-yellow-500/20",
-      icon: AlertTriangle,
+      Icon: AlertIcon,
       label: "Medium Risk",
       bgIntense: "bg-yellow-500/20",
     },
@@ -152,7 +150,7 @@ export default function DashboardRiskPage() {
       color: "text-red-500",
       bg: "bg-red-500/10",
       border: "border-red-500/20",
-      icon: XCircle,
+      Icon: DangerRingIcon,
       label: "High Risk",
       bgIntense: "bg-red-500/20",
     },
@@ -160,7 +158,6 @@ export default function DashboardRiskPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Risk Assessment</h1>
@@ -169,12 +166,12 @@ export default function DashboardRiskPage() {
           </p>
         </div>
         <Button variant="outline" size="sm">
-          <TrendingUp className="w-4 h-4 mr-2" />
+          <TrendUpIcon className="w-4 h-4 mr-2" />
           Download Report
         </Button>
       </div>
 
-      {/* Overall Risk Summary Cards */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-card/50 backdrop-blur border-border/50">
           <CardContent className="p-5">
@@ -187,59 +184,35 @@ export default function DashboardRiskPage() {
                 </p>
               </div>
               <div className="p-2.5 rounded-xl bg-blue-500/10">
-                <BarChart3 className="w-5 h-5 text-blue-500" />
+                <SignalTowerIcon className="w-5 h-5 text-blue-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card/50 backdrop-blur border-border/50 border-l-4 border-l-green-500">
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Low Risk</p>
-                <p className="text-2xl font-bold mt-2 text-green-500">
-                  {riskStats.low}
-                </p>
-              </div>
-              <div className="p-2.5 rounded-xl bg-green-500/10">
-                <CheckCircle2 className="w-5 h-5 text-green-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/50 backdrop-blur border-border/50 border-l-4 border-l-yellow-500">
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Medium Risk</p>
-                <p className="text-2xl font-bold mt-2 text-yellow-500">
-                  {riskStats.medium}
-                </p>
-              </div>
-              <div className="p-2.5 rounded-xl bg-yellow-500/10">
-                <AlertTriangle className="w-5 h-5 text-yellow-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card/50 backdrop-blur border-border/50 border-l-4 border-l-red-500">
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">High Risk</p>
-                <p className="text-2xl font-bold mt-2 text-red-500">
-                  {riskStats.high}
-                </p>
-              </div>
-              <div className="p-2.5 rounded-xl bg-red-500/10">
-                <XCircle className="w-5 h-5 text-red-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {(["low", "medium", "high"] as const).map((level) => {
+          const cfg = riskConfig[level];
+          return (
+            <Card
+              key={level}
+              className={`bg-card/50 backdrop-blur border-border/50 border-l-4 border-l-${level === "low" ? "green" : level === "medium" ? "yellow" : "red"}-500`}
+            >
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{cfg.label}</p>
+                    <p className={`text-2xl font-bold mt-2 ${cfg.color}`}>
+                      {riskStats[level]}
+                    </p>
+                  </div>
+                  <div className={`p-2.5 rounded-xl ${cfg.bg}`}>
+                    <cfg.Icon className={`w-5 h-5 ${cfg.color}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Traffic Light Visualization */}
@@ -251,68 +224,39 @@ export default function DashboardRiskPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Low Risk */}
-            <div className="text-center">
-              <div className="flex justify-center mb-4">
-                <div className="relative w-24 h-24 rounded-full bg-green-500/20 border-4 border-green-500 flex items-center justify-center animate-pulse">
-                  <CheckCircle2 className="w-12 h-12 text-green-500" />
+            {(["low", "medium", "high"] as const).map((level) => {
+              const cfg = riskConfig[level];
+              return (
+                <div key={level} className="text-center">
+                  <div className="flex justify-center mb-4">
+                    <div
+                      className={`relative w-24 h-24 rounded-full ${cfg.bgIntense} border-4 border-${level === "low" ? "green" : level === "medium" ? "yellow" : "red"}-500 flex items-center justify-center animate-pulse`}
+                    >
+                      <cfg.Icon className={`w-12 h-12 ${cfg.color}`} />
+                    </div>
+                  </div>
+                  <h3 className={`font-semibold mb-2 ${cfg.color}`}>
+                    {cfg.label}
+                  </h3>
+                  <p className={`text-3xl font-bold mb-1 ${cfg.color}`}>
+                    {riskStats[level]}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Areas</p>
+                  <p className={`text-xs mt-2 ${cfg.color}`}>
+                    {Math.round((riskStats[level] / riskAreas.length) * 100)}%
+                    of total
+                  </p>
                 </div>
-              </div>
-              <h3 className="font-semibold text-green-600 mb-2">Low Risk</h3>
-              <p className="text-3xl font-bold text-green-500 mb-1">
-                {riskStats.low}
-              </p>
-              <p className="text-sm text-muted-foreground">Areas</p>
-              <p className="text-xs text-green-500 mt-2">
-                {Math.round((riskStats.low / riskAreas.length) * 100)}% of total
-              </p>
-            </div>
-
-            {/* Medium Risk */}
-            <div className="text-center">
-              <div className="flex justify-center mb-4">
-                <div className="relative w-24 h-24 rounded-full bg-yellow-500/20 border-4 border-yellow-500 flex items-center justify-center animate-pulse">
-                  <AlertTriangle className="w-12 h-12 text-yellow-500" />
-                </div>
-              </div>
-              <h3 className="font-semibold text-yellow-600 mb-2">
-                Medium Risk
-              </h3>
-              <p className="text-3xl font-bold text-yellow-500 mb-1">
-                {riskStats.medium}
-              </p>
-              <p className="text-sm text-muted-foreground">Areas</p>
-              <p className="text-xs text-yellow-500 mt-2">
-                {Math.round((riskStats.medium / riskAreas.length) * 100)}% of
-                total
-              </p>
-            </div>
-
-            {/* High Risk */}
-            <div className="text-center">
-              <div className="flex justify-center mb-4">
-                <div className="relative w-24 h-24 rounded-full bg-red-500/20 border-4 border-red-500 flex items-center justify-center animate-pulse">
-                  <XCircle className="w-12 h-12 text-red-500" />
-                </div>
-              </div>
-              <h3 className="font-semibold text-red-600 mb-2">High Risk</h3>
-              <p className="text-3xl font-bold text-red-500 mb-1">
-                {riskStats.high}
-              </p>
-              <p className="text-sm text-muted-foreground">Areas</p>
-              <p className="text-xs text-red-500 mt-2">
-                {Math.round((riskStats.high / riskAreas.length) * 100)}% of
-                total
-              </p>
-            </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
 
-      {/* Search and Filter */}
+      {/* Search & Filter */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+          <SearchIcon className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search risk areas..."
             className="pl-10"
@@ -323,7 +267,7 @@ export default function DashboardRiskPage() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
-              <Filter className="w-4 h-4 mr-2" />
+              <FilterIcon className="w-4 h-4 mr-2" />
               Risk Level
             </Button>
           </DropdownMenuTrigger>
@@ -344,7 +288,7 @@ export default function DashboardRiskPage() {
         </DropdownMenu>
       </div>
 
-      {/* Detailed Risk List */}
+      {/* Risk List */}
       <Card className="bg-card/50 backdrop-blur border-border/50">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">
@@ -354,7 +298,7 @@ export default function DashboardRiskPage() {
         <CardContent className="space-y-3">
           {filteredRisks.length === 0 ? (
             <div className="text-center py-8">
-              <BarChart3 className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+              <SignalTowerIcon className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
               <p className="text-muted-foreground">No risk areas found</p>
             </div>
           ) : (
@@ -363,24 +307,20 @@ export default function DashboardRiskPage() {
               return (
                 <div
                   key={risk.id}
-                  className={`p-4 rounded-xl border transition-colors ${
-                    config.border
-                  } ${config.bgIntense} hover:opacity-80`}
+                  className={`p-4 rounded-xl border transition-colors ${config.border} ${config.bgIntense} hover:opacity-80`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start gap-3 flex-1">
                       <div
                         className={`p-2.5 rounded-lg flex-shrink-0 ${config.bg}`}
                       >
-                        <config.icon className={`w-5 h-5 ${config.color}`} />
+                        <config.Icon className={`w-5 h-5 ${config.color}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h4 className="font-semibold">{risk.name}</h4>
                           <span
-                            className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                              config.bg
-                            } ${config.color}`}
+                            className={`text-xs font-medium px-2.5 py-1 rounded-full ${config.bg} ${config.color}`}
                           >
                             {config.label}
                           </span>
@@ -389,20 +329,18 @@ export default function DashboardRiskPage() {
                           {risk.description}
                         </p>
                         <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <span className="px-2 py-0.5 rounded bg-primary/10 text-primary">
-                              {risk.category}
-                            </span>
+                          <span className="px-2 py-0.5 rounded bg-primary/10 text-primary">
+                            {risk.category}
                           </span>
                           {risk.flaggedItems > 0 && (
                             <span className="flex items-center gap-1 text-red-500">
-                              <AlertTriangle className="w-3 h-3" />
+                              <AlertIcon className="w-3 h-3" />
                               {risk.flaggedItems} flagged item
                               {risk.flaggedItems !== 1 ? "s" : ""}
                             </span>
                           )}
                           <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
+                            <SandglassIcon className="w-3 h-3" />
                             Updated {risk.lastUpdated}
                           </span>
                         </div>
@@ -412,11 +350,11 @@ export default function DashboardRiskPage() {
                       <p className="text-2xl font-bold">{risk.score}%</p>
                       <div className="flex items-center gap-1 mt-1 justify-end">
                         {risk.trend === "up" ? (
-                          <ArrowUpRight className="w-4 h-4 text-green-500" />
+                          <ArrowUpRightIcon className="w-4 h-4 text-green-500" />
                         ) : risk.trend === "down" ? (
-                          <ArrowDownRight className="w-4 h-4 text-red-500" />
+                          <ArrowDownRightIcon className="w-4 h-4 text-red-500" />
                         ) : (
-                          <div className="w-4 h-0.5 bg-muted-foreground"></div>
+                          <div className="w-4 h-0.5 bg-muted-foreground" />
                         )}
                         <span className="text-xs text-muted-foreground">
                           {risk.trend.charAt(0).toUpperCase() +

@@ -5,14 +5,16 @@ import {
   RotateCcw,
   ThumbsUp,
   ThumbsDown,
-  FileText,
   Download,
-  Bot,
   User,
 } from "lucide-react";
 import { Button } from "@/react-app/components/ui/button";
 import { cn } from "@/react-app/lib/utils";
 import { MarkdownRenderer } from "@/react-app/components/chat/MarkdownRenderer";
+import { Logo } from "@/react-app/components/Logo";
+import {
+  ManuscriptIcon, // replaces FileText (lucide) — legal document/file
+} from "@/react-app/components/icons";
 
 export interface ChatAttachment {
   id: string;
@@ -54,23 +56,20 @@ export function ChatMessage({ message, onRegenerate }: ChatMessageProps) {
     <div
       className={cn("group flex gap-4 py-6", isUser ? "flex-row-reverse" : "")}
     >
-      {/* Avatar */}
-      <div
-        className={cn(
-          "w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0",
-          isUser
-            ? "bg-gradient-to-br from-primary to-indigo-600"
-            : "bg-gradient-to-br from-slate-600 to-slate-800 dark:from-slate-500 dark:to-slate-700",
-        )}
-      >
-        {isUser ? (
+      {/* ── Avatar ── */}
+      {isUser ? (
+        // User avatar — kept with gradient box + User lucide (no custom person-in-box equivalent)
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-primary to-indigo-600">
           <User className="w-5 h-5 text-white" />
-        ) : (
-          <Bot className="w-5 h-5 text-white" />
-        )}
-      </div>
+        </div>
+      ) : (
+        // LAI Assistant avatar — Logo replaces Bot lucide (Image 1 fix)
+        <div className="w-9 h-9 flex items-center justify-center flex-shrink-0">
+          <Logo size="sm" showText={false} />
+        </div>
+      )}
 
-      {/* Message Content */}
+      {/* ── Message Content ── */}
       <div
         className={cn("flex-1 space-y-3 min-w-0", isUser ? "text-right" : "")}
       >
@@ -88,7 +87,7 @@ export function ChatMessage({ message, onRegenerate }: ChatMessageProps) {
           </span>
         </div>
 
-        {/* Attachments */}
+        {/* ── Attachments ── */}
         {message.attachments && message.attachments.length > 0 && (
           <div
             className={cn("flex flex-wrap gap-2", isUser ? "justify-end" : "")}
@@ -98,13 +97,15 @@ export function ChatMessage({ message, onRegenerate }: ChatMessageProps) {
                 key={file.id}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50 border border-border/50 max-w-xs"
               >
-                <FileText className="w-4 h-4 text-primary flex-shrink-0" />
+                {/* ManuscriptIcon replaces FileText (lucide) — legal manuscript for doc files */}
+                <ManuscriptIcon className="w-4 h-4 text-primary flex-shrink-0" />
                 <div className="flex-1 min-w-0 text-left">
                   <p className="text-sm font-medium truncate">{file.name}</p>
                   <p className="text-xs text-muted-foreground">
                     {formatFileSize(file.size)}
                   </p>
                 </div>
+                {/* Download — no custom equivalent, kept from lucide */}
                 <Button variant="ghost" size="icon" className="h-7 w-7">
                   <Download className="w-3.5 h-3.5" />
                 </Button>
@@ -113,7 +114,7 @@ export function ChatMessage({ message, onRegenerate }: ChatMessageProps) {
           </div>
         )}
 
-        {/* Message bubble */}
+        {/* ── Message bubble ── */}
         <div
           className={cn(
             "prose prose-sm dark:prose-invert max-w-none",
@@ -129,18 +130,17 @@ export function ChatMessage({ message, onRegenerate }: ChatMessageProps) {
             )}
           >
             {isUser ? (
-              // ✅ User: plain text
               <p className="whitespace-pre-wrap text-sm leading-relaxed">
                 {message.content}
               </p>
             ) : (
-              // ✅ Assistant: rendered markdown
               <MarkdownRenderer content={message.content} />
             )}
           </div>
         </div>
 
-        {/* Actions — assistant only */}
+        {/* ── Actions — assistant only ── */}
+        {/* Copy, RotateCcw, ThumbsUp, ThumbsDown — no custom equivalents, kept from lucide */}
         {!isUser && (
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button

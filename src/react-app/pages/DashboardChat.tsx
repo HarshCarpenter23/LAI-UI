@@ -1,6 +1,14 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useOutletContext } from "react-router";
-import { Wind, Bell } from "lucide-react";
+import { Logo } from "@/react-app/components/Logo";
+import { ChevronDown } from "lucide-react";
+import {
+  BellIcon,
+  ManuscriptIcon,
+  AlertIcon,
+  SignalTowerIcon,
+  CircuitBoltIcon,
+} from "@/react-app/components/icons";
 import {
   ChatMessage,
   ChatMessageData,
@@ -19,10 +27,26 @@ const mockResponses = [
 ];
 
 const suggestedPrompts = [
-  { icon: "📋", text: "Analyze uploaded permits", desc: "Review BImSchG compliance" },
-  { icon: "⚖️", text: "Check land lease risks", desc: "Identify contractual issues" },
-  { icon: "🛡️", text: "Environmental compliance", desc: "Verify BNatSchG requirements" },
-  { icon: "⚡", text: "Grid connection review", desc: "Analyze Einspeisezusage terms" },
+  {
+    Icon: ManuscriptIcon,
+    text: "Analyze uploaded permits",
+    desc: "Review BImSchG compliance",
+  },
+  {
+    Icon: AlertIcon,
+    text: "Check land lease risks",
+    desc: "Identify contractual issues",
+  },
+  {
+    Icon: SignalTowerIcon,
+    text: "Environmental compliance",
+    desc: "Verify BNatSchG requirements",
+  },
+  {
+    Icon: CircuitBoltIcon,
+    text: "Grid connection review",
+    desc: "Analyze Einspeisezusage terms",
+  },
 ];
 
 interface OutletContextType {
@@ -34,32 +58,70 @@ interface OutletContextType {
 
 export default function DashboardChatPage() {
   const context = useOutletContext<OutletContextType>();
-  const { activeConversationId, conversations } = context || {};
+  const {
+    activeConversationId,
+    conversations,
+    setConversations,
+    setActiveConversationId,
+  } = context || {};
 
   const [messages, setMessages] = useState<ChatMessageData[]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const bottomAnchorRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const responseIndexRef = useRef(0);
 
-  // Get current active conversation
-  const activeConversation = conversations?.find(c => c.id === activeConversationId);
+  const activeConversation = conversations?.find(
+    (c) => c.id === activeConversationId,
+  );
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  // ── Core scroll function — scrolls the container to absolute bottom ───────
+  const forceScrollToBottom = useCallback(
+    (behavior: ScrollBehavior = "smooth") => {
+      // Method 1: scrollIntoView on anchor element
+      bottomAnchorRef.current?.scrollIntoView({ behavior, block: "end" });
+      // Method 2: also set scrollTop directly as fallback
+      const el = scrollContainerRef.current;
+      if (el) el.scrollTo({ top: el.scrollHeight, behavior });
+      setShowScrollBtn(false);
+    },
+    [],
+  );
 
+  // ── Show/hide scroll button ───────────────────────────────────────────────
+  const handleScroll = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setShowScrollBtn(dist > 120);
+  }, []);
+
+  // ── Auto-scroll whenever messages or typing state changes ─────────────────
+  // Uses setTimeout(0) to push scroll AFTER React has committed DOM changes.
+  // This is more reliable than useLayoutEffect + ref flag because it runs
+  // outside the render cycle entirely, guaranteeing DOM is fully updated.
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
+    const timer = setTimeout(() => {
+      forceScrollToBottom("smooth");
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [messages.length, isTyping, forceScrollToBottom]);
 
-  // Reset messages when conversation changes
+  // ── Reset on conversation switch ──────────────────────────────────────────
   useEffect(() => {
     setMessages([]);
     responseIndexRef.current = 0;
+    setShowScrollBtn(false);
   }, [activeConversationId]);
 
-  const handleSendMessage = async (content: string, attachments: ChatAttachment[]) => {
-    // Create user message
+  // ── Send message ──────────────────────────────────────────────────────────
+  const handleSendMessage = async (
+    content: string,
+    attachments: ChatAttachment[],
+  ) => {
     const userMessage: ChatMessageData = {
       id: crypto.randomUUID(),
       role: "user",
@@ -69,11 +131,14 @@ export default function DashboardChatPage() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-
-    // Simulate AI response
     setIsTyping(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1500));
-    setIsTyping(false);
+
+    // Force scroll immediately when user sends — don't wait for useEffect
+    setTimeout(() => forceScrollToBottom("smooth"), 0);
+
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1500 + Math.random() * 1500),
+    );
 
     const aiMessage: ChatMessageData = {
       id: crypto.randomUUID(),
@@ -83,100 +148,123 @@ export default function DashboardChatPage() {
     };
     responseIndexRef.current++;
 
+    setIsTyping(false);
     setMessages((prev) => [...prev, aiMessage]);
+
+    // Auto-focus input so user is ready for next query
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
-  const handleSuggestedPrompt = (prompt: string) => {
+  const handleSuggestedPrompt = (prompt: string) =>
     handleSendMessage(prompt, []);
-  };
+  const hasMessages = messages.length > 0;
 
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
-      {/* Fixed Header */}
+      {/* ── Header ── */}
       <div className="flex-shrink-0 h-14 border-b border-border flex items-center justify-between px-6 bg-background/50 backdrop-blur">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center">
-            <Wind className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold">
-              {activeConversation ? activeConversation.title : "LAI Assistant"}
-            </h2>
-          </div>
+        <div className="flex items-center gap-3">
+          <Logo size="sm" />
+          {activeConversation && (
+            <>
+              <span className="text-border/60 select-none">·</span>
+              <span className="text-sm text-muted-foreground truncate max-w-xs">
+                {activeConversation.title}
+              </span>
+            </>
+          )}
         </div>
-
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button variant="ghost" size="icon" className="relative h-9 w-9">
-            <Bell className="w-5 h-5" />
+            <BellIcon className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
           </Button>
         </div>
       </div>
 
-      {/* Scrollable Messages Area - ONLY THIS SCROLLS */}
-      <div className="flex-1 w-full min-h-0 overflow-y-auto flex flex-col">
-        {messages.length === 0 && !activeConversationId ? (
-          // Empty State
+      {/* ── Scrollable Messages ── */}
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 w-full min-h-0 overflow-y-auto flex flex-col relative"
+      >
+        {!hasMessages && !activeConversationId ? (
           <div className="flex-1 flex flex-col items-center justify-center py-16 px-4">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-indigo-400/20 flex items-center justify-center mb-6">
-                <Wind className="w-10 h-10 text-primary" />
-              </div>
-              <h2 className="text-2xl font-bold mb-2">Welcome to LAI</h2>
-              <p className="text-muted-foreground text-center max-w-md mb-8">
-                Your AI assistant for wind energy legal due diligence. Upload documents, ask questions, and get instant analysis.
-              </p>
-
-              <div className="grid grid-cols-2 gap-3 w-full max-w-lg">
-                {suggestedPrompts.map((prompt, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleSuggestedPrompt(prompt.text)}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-muted/30 hover:bg-muted/50 border border-border/50 hover:border-primary/30 transition-all text-left group"
-                  >
-                    <div className="text-xl flex-shrink-0">{prompt.icon}</div>
-                    <div>
-                      <p className="text-sm font-medium">{prompt.text}</p>
-                      <p className="text-xs text-muted-foreground">{prompt.desc}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-center justify-center mb-6">
+              <Logo size="lg" showText={false} />
             </div>
-          ) : messages.length === 0 && activeConversationId ? (
-            // New conversation started
-            <div className="flex-1 flex flex-col items-center justify-center py-16 px-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-indigo-400/20 flex items-center justify-center mb-4">
-                <Wind className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">New Conversation</h3>
-              <p className="text-muted-foreground text-center max-w-md">
-                Ask me anything about wind energy permits, contracts, or legal compliance. You can also upload documents for analysis.
-              </p>
-            </div>
-          ) : (
-            // Messages
-            <div className="max-w-4xl mx-auto w-full px-4 py-4">
-              {messages.map((message) => (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  onRegenerate={() => {}}
-                />
+            <h2 className="text-2xl font-bold mb-2">Welcome to LAI</h2>
+            <p className="text-muted-foreground text-center max-w-md mb-8">
+              Your AI assistant for wind energy legal due diligence. Upload
+              documents, ask questions, and get instant analysis.
+            </p>
+            <div className="grid grid-cols-2 gap-3 w-full max-w-lg">
+              {suggestedPrompts.map((prompt, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleSuggestedPrompt(prompt.text)}
+                  className="flex items-start gap-3 p-4 rounded-xl bg-muted/30 hover:bg-muted/50 border border-border/50 hover:border-primary/30 transition-all text-left"
+                >
+                  <div className="flex-shrink-0 mt-0.5 text-primary">
+                    <prompt.Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{prompt.text}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {prompt.desc}
+                    </p>
+                  </div>
+                </button>
               ))}
-              {isTyping && <TypingIndicator />}
-              <div ref={messagesEndRef} />
             </div>
-          )}
+          </div>
+        ) : !hasMessages && activeConversationId ? (
+          <div className="flex-1 flex flex-col items-center justify-center py-16 px-4">
+            <div className="flex items-center justify-center mb-4">
+              <Logo size="lg" showText={false} />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">New Conversation</h3>
+            <p className="text-muted-foreground text-center max-w-md">
+              Ask me anything about wind energy permits, contracts, or legal
+              compliance. You can also upload documents for analysis.
+            </p>
+          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto w-full px-4 py-4">
+            {messages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                message={message}
+                onRegenerate={() => {}}
+              />
+            ))}
+            {isTyping && <TypingIndicator />}
+            {/* Anchor element at the very bottom — scrollIntoView target */}
+            <div ref={bottomAnchorRef} style={{ height: 1 }} />
+          </div>
+        )}
+
+        {/* Scroll-to-bottom button */}
+        {showScrollBtn && hasMessages && (
+          <button
+            onClick={() => forceScrollToBottom("smooth")}
+            className="sticky bottom-4 left-1/2 -translate-x-1/2 w-fit mx-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all text-xs font-medium z-10"
+          >
+            <ChevronDown className="w-3.5 h-3.5" />
+            Latest
+          </button>
+        )}
       </div>
 
-      {/* Fixed Input Area at Bottom */}
+      {/* ── Input ── */}
       <div className="flex-shrink-0 border-t border-border">
         <div className="max-w-4xl mx-auto w-full px-4 py-4">
           <ChatInput
             onSend={handleSendMessage}
             disabled={isTyping}
             placeholder="Ask LAI about permits, contracts, or upload documents..."
+            inputRef={inputRef}
           />
         </div>
       </div>

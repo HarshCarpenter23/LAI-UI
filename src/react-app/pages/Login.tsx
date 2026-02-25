@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/react-app/components/ui/button";
 import { Input } from "@/react-app/components/ui/input";
 import { Label } from "@/react-app/components/ui/label";
@@ -8,6 +7,13 @@ import { Checkbox } from "@/react-app/components/ui/checkbox";
 import { Logo } from "@/react-app/components/Logo";
 import { ThemeToggle } from "@/react-app/components/ThemeToggle";
 import { useAuth } from "@/react-app/contexts/AuthContext";
+import {
+  LensIcon,
+  LensOffIcon,
+  EnvelopeIcon,
+  PadlockIcon,
+  ArrowRightIcon,
+} from "@/react-app/components/icons";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -24,7 +30,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-
     try {
       await login(email, password);
       navigate("/dashboard");
@@ -39,9 +44,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Left Panel - Branding */}
+      {/* Left Panel — Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-indigo-500/10 to-blue-500/20" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
@@ -50,7 +54,6 @@ export default function LoginPage() {
           <Link to="/">
             <Logo size="lg" />
           </Link>
-
           <div className="space-y-6">
             <h1 className="text-4xl font-bold">
               Welcome back to
@@ -60,7 +63,6 @@ export default function LoginPage() {
               Continue transforming your wind energy due diligence with
               AI-powered legal analysis.
             </p>
-
             <div className="flex items-center gap-4 pt-4">
               <div className="flex -space-x-3">
                 {[1, 2, 3, 4].map((i) => (
@@ -81,9 +83,8 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right Panel - Login Form */}
+      {/* Right Panel — Form */}
       <div className="flex-1 flex flex-col">
-        {/* Header */}
         <div className="flex items-center justify-between p-6">
           <Link to="/" className="lg:hidden">
             <Logo size="sm" />
@@ -102,7 +103,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Form */}
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="w-full max-w-md space-y-8">
             <div className="text-center lg:text-left">
@@ -120,10 +120,11 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
+                {/* Email */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email address</Label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <EnvelopeIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="email"
                       type="email"
@@ -136,6 +137,7 @@ export default function LoginPage() {
                   </div>
                 </div>
 
+                {/* Password */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password">Password</Label>
@@ -147,7 +149,7 @@ export default function LoginPage() {
                     </Link>
                   </div>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <PadlockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -163,9 +165,9 @@ export default function LoginPage() {
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
+                        <LensOffIcon className="w-4 h-4" />
                       ) : (
-                        <Eye className="w-4 h-4" />
+                        <LensIcon className="w-4 h-4" />
                       )}
                     </button>
                   </div>
@@ -176,9 +178,7 @@ export default function LoginPage() {
                 <Checkbox
                   id="remember"
                   checked={rememberMe}
-                  onCheckedChange={(checked) =>
-                    setRememberMe(checked as boolean)
-                  }
+                  onCheckedChange={(c) => setRememberMe(c as boolean)}
                 />
                 <Label
                   htmlFor="remember"
@@ -194,7 +194,7 @@ export default function LoginPage() {
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign in"}
-                <ArrowRight className="ml-2 w-4 h-4" />
+                <ArrowRightIcon className="ml-2 w-4 h-4" />
               </Button>
             </form>
           </div>

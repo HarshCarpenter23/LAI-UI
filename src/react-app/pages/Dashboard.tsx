@@ -1,16 +1,3 @@
-import {
-  FileText,
-  MessageSquare,
-  BarChart3,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  ArrowUpRight,
-  Zap,
-  Wind,
-  Plus,
-} from "lucide-react";
 import { Link } from "react-router";
 import {
   Card,
@@ -20,14 +7,26 @@ import {
 } from "@/react-app/components/ui/card";
 import { Button } from "@/react-app/components/ui/button";
 import { Progress } from "@/react-app/components/ui/progress";
+import {
+  ManuscriptIcon,
+  ConsultIcon,
+  SignalTowerIcon,
+  TrendUpIcon,
+  AlertIcon,
+  CheckRingIcon,
+  DangerRingIcon,
+  ArrowUpRightIcon,
+  CircuitBoltIcon,
+  WindRoseIcon,
+  PlusIcon,
+} from "@/react-app/components/icons";
 
 const stats = [
   {
     title: "Documents Analyzed",
     value: "1,284",
     change: "+12%",
-    trend: "up",
-    icon: FileText,
+    icon: ManuscriptIcon,
     color: "text-primary",
     bgColor: "bg-primary/10",
   },
@@ -35,8 +34,7 @@ const stats = [
     title: "Active Projects",
     value: "8",
     change: "+2",
-    trend: "up",
-    icon: Wind,
+    icon: WindRoseIcon,
     color: "text-indigo-500",
     bgColor: "bg-indigo-500/10",
   },
@@ -44,8 +42,7 @@ const stats = [
     title: "AI Conversations",
     value: "342",
     change: "+28%",
-    trend: "up",
-    icon: MessageSquare,
+    icon: ConsultIcon,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
   },
@@ -53,8 +50,7 @@ const stats = [
     title: "Risk Assessments",
     value: "56",
     change: "+5",
-    trend: "up",
-    icon: BarChart3,
+    icon: SignalTowerIcon,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
   },
@@ -88,19 +84,19 @@ const riskIndicator = {
   low: {
     color: "text-green-500",
     bg: "bg-green-500/10",
-    icon: CheckCircle2,
+    Icon: CheckRingIcon,
     label: "Low Risk",
   },
   medium: {
     color: "text-yellow-500",
     bg: "bg-yellow-500/10",
-    icon: AlertTriangle,
+    Icon: AlertIcon,
     label: "Medium Risk",
   },
   high: {
     color: "text-red-500",
     bg: "bg-red-500/10",
-    icon: XCircle,
+    Icon: DangerRingIcon,
     label: "High Risk",
   },
 };
@@ -110,25 +106,25 @@ const recentActivity = [
     action: "Document uploaded",
     item: "permit_application_2024.pdf",
     time: "5 min ago",
-    icon: FileText,
+    Icon: ManuscriptIcon,
   },
   {
     action: "AI analysis completed",
     item: "Environmental impact report",
     time: "23 min ago",
-    icon: Zap,
+    Icon: CircuitBoltIcon,
   },
   {
     action: "Risk flagged",
     item: "Land lease agreement clause 4.2",
     time: "1 hour ago",
-    icon: AlertTriangle,
+    Icon: AlertIcon,
   },
   {
     action: "Project created",
     item: "Baltic Offshore Expansion",
     time: "3 hours ago",
-    icon: Wind,
+    Icon: WindRoseIcon,
   },
 ];
 
@@ -140,17 +136,15 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back, John. Here's your legal AI overview.
+            Welcome back. Here's your legal AI overview.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link to="/dashboard/chat">
-            <Button className="glow-sm">
-              <Plus className="w-4 h-4 mr-2" />
-              New Chat
-            </Button>
-          </Link>
-        </div>
+        <Link to="/dashboard/chat">
+          <Button className="glow-sm">
+            <PlusIcon className="w-4 h-4 mr-2" />
+            New Chat
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Grid */}
@@ -166,7 +160,7 @@ export default function DashboardPage() {
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
                 <div className="flex items-center gap-1 text-xs font-medium text-green-500">
-                  <TrendingUp className="w-3 h-3" />
+                  <TrendUpIcon className="w-3 h-3" />
                   {stat.change}
                 </div>
               </div>
@@ -180,7 +174,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Recent Projects */}
+        {/* Active Projects */}
         <div className="lg:col-span-2">
           <Card className="bg-card/50 backdrop-blur border-border/50">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
@@ -190,7 +184,7 @@ export default function DashboardPage() {
               <Link to="/dashboard/projects">
                 <Button variant="ghost" size="sm" className="text-primary">
                   View all
-                  <ArrowUpRight className="w-4 h-4 ml-1" />
+                  <ArrowUpRightIcon className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             </CardHeader>
@@ -213,7 +207,7 @@ export default function DashboardPage() {
                       <div
                         className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${risk.bg} ${risk.color}`}
                       >
-                        <risk.icon className="w-3 h-3" />
+                        <risk.Icon className="w-3 h-3" />
                         {risk.label}
                       </div>
                     </div>
@@ -245,7 +239,7 @@ export default function DashboardPage() {
               {recentActivity.map((activity, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <div className="p-2 rounded-lg bg-muted/50 flex-shrink-0">
-                    <activity.icon className="w-4 h-4 text-muted-foreground" />
+                    <activity.Icon className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{activity.action}</p>
@@ -269,7 +263,7 @@ export default function DashboardPage() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-primary/20">
-                <Zap className="w-6 h-6 text-primary" />
+                <CircuitBoltIcon className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <h3 className="font-semibold">Quick Due Diligence</h3>

@@ -110,7 +110,7 @@ export default function DashboardSettingsPage() {
   const themeOptions = [
     { value: "light" as const, label: "Light", Icon: SunIcon },
     { value: "dark" as const, label: "Dark", Icon: MoonIcon },
-    
+
   ];
 
   const notificationItems = [
@@ -181,9 +181,9 @@ export default function DashboardSettingsPage() {
         {/* ── Profile ── */}
         <TabsContent value="profile" className="space-y-6">
           {saveSuccess && (
-            <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center gap-3">
-              <CheckIcon className="w-5 h-5 text-green-500" />
-              <span className="text-green-700">
+            <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
+              <CheckIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+              <span className="text-emerald-700 dark:text-emerald-400">
                 Profile updated successfully!
               </span>
             </div>
@@ -211,8 +211,8 @@ export default function DashboardSettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-indigo-500 flex items-center justify-center">
-                  <PersonIcon className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+                  <PersonIcon className="w-8 h-8 text-slate-500 dark:text-slate-400" />
                 </div>
                 {editingProfile && (
                   <Button variant="outline" size="sm">
@@ -353,11 +353,10 @@ export default function DashboardSettingsPage() {
                       <button
                         key={opt.value}
                         onClick={() => setTheme(opt.value)}
-                        className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2.5 transition-all ${
-                          isActive
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border/50 hover:border-primary/40 text-muted-foreground hover:text-foreground"
-                        }`}
+                        className={`p-4 rounded-md border-2 flex flex-col items-center gap-2.5 transition-all ${isActive
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border/50 hover:border-primary/40 text-muted-foreground hover:text-foreground"
+                          }`}
                       >
                         <opt.Icon className="w-5 h-5" />
                         <span className="text-sm font-medium">{opt.label}</span>
@@ -524,7 +523,7 @@ export default function DashboardSettingsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-xs px-2 py-1 rounded ${key.active ? "bg-green-500/20 text-green-500" : "bg-gray-500/20 text-gray-500"}`}
+                        className={`text-xs px-2 py-1 rounded ${key.active ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 border border-emerald-500/20" : "bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20"}`}
                       >
                         {key.active ? "Active" : "Inactive"}
                       </span>

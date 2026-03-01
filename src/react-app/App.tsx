@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { ThemeProvider } from "@/react-app/contexts/ThemeContext";
+
 import { AuthProvider } from "@/react-app/contexts/AuthContext";
 import { ProtectedRoute } from "@/react-app/components/ProtectedRoute";
 import LandingPage from "@/react-app/pages/Landing";

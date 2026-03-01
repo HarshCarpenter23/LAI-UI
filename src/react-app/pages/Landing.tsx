@@ -323,17 +323,17 @@ export default function LandingPage() {
               </a>
             </div>
             <div className="flex items-center gap-3">
-              <ThemeToggle />
               <Link to="/login">
                 <Button variant="ghost" size="sm">
                   Sign In
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button size="sm" className="glow-sm">
+                <Button size="sm" className="shadow-sm">
                   Get Started
                 </Button>
               </Link>
+              <ThemeToggle />
             </div>
           </div>
         </div>
@@ -342,21 +342,19 @@ export default function LandingPage() {
       {/* ── Hero ── */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-primary/5 to-blue-500/5 rounded-full blur-3xl" />
+          {/* Removed blurred decorations for sharp/minimal UI */}
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
               <WindRoseIcon className="w-4 h-4" />
               Revolutionizing Wind Energy Due Diligence in Germany
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
               Legal AI That Transforms
-              <span className="block text-gradient mt-2">
+              <span className="block text-primary mt-2">
                 Due Diligence Forever
               </span>
             </h1>
@@ -369,7 +367,7 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
               <Link to="/signup">
-                <Button size="lg" className="glow text-lg px-8 h-14">
+                <Button size="lg" className="shadow-sm text-lg px-8 h-14 bg-blue-600 hover:bg-blue-700 text-white">
                   Start Free Trial
                   <LongArrowIcon className="ml-2 w-5 h-5" />
                 </Button>
@@ -383,9 +381,9 @@ export default function LandingPage() {
             <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto">
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center">
-                  <div className="text-3xl sm:text-4xl font-bold text-gradient">
+                  <div className="text-3xl sm:text-4xl font-bold text-primary">
                     {stat.value}
-                    <span className="text-primary">{stat.unit}</span>
+                    <span className="text-primary/80">{stat.unit}</span>
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
                     {stat.label}
@@ -416,7 +414,7 @@ export default function LandingPage() {
                 key={feature.title}
                 className="p-6 bg-card/50 backdrop-blur border-border/50 hover:border-primary/50 transition-all group"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <feature.Icon className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
@@ -448,7 +446,7 @@ export default function LandingPage() {
             {workflow.map((item, index) => (
               <div key={item.step} className="relative">
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center text-2xl font-bold text-white mb-4 glow-sm">
+                  <div className="w-16 h-16 rounded-md bg-slate-800 flex items-center justify-center text-2xl font-bold text-slate-200 mb-4 shadow-sm border border-slate-700">
                     {item.step}
                   </div>
                   <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
@@ -469,8 +467,8 @@ export default function LandingPage() {
       <section className="py-20 border-t border-border/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-indigo-500/20 rounded-3xl blur-3xl" />
-            <div className="relative bg-card/80 backdrop-blur border border-border/50 rounded-3xl p-12">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-indigo-500/20 rounded-md blur-3xl" />
+            <div className="relative bg-card/80 backdrop-blur border border-border/50 rounded-md p-12">
               <div className="flex justify-center mb-6">
                 <SealColumnIcon className="w-14 h-14 text-primary opacity-50" />
               </div>
@@ -483,7 +481,7 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link to="/signup">
-                  <Button size="lg" className="glow text-lg px-8 h-14">
+                  <Button size="lg" className="shadow-sm text-lg px-8 h-14 bg-blue-600 hover:bg-blue-700 text-white">
                     Start Free Trial
                     <LongArrowIcon className="ml-2 w-5 h-5" />
                   </Button>

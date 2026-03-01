@@ -56,36 +56,16 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
 
       ctx.clearRect(0, 0, D, D);
 
-      /* ── 1. Aurora background orb ──────────────────────────── */
-      const auraR = D * 0.52;
-      const pulse = 0.78 + 0.22 * Math.sin(t * 0.9);
-
-      const aura1 = ctx.createRadialGradient(
-        cx + Math.sin(t * 0.7) * D * 0.08,
-        cy + Math.cos(t * 0.5) * D * 0.07,
-        0,
-        cx,
-        cy,
-        auraR * pulse,
-      );
-      aura1.addColorStop(0, "rgba(99,179,255,0.28)");
-      aura1.addColorStop(0.4, "rgba(100,80,255,0.18)");
-      aura1.addColorStop(1, "rgba(0,0,0,0)");
+      /* ── 1. Clean background circle (No blurry aura) ──────── */
+      const auraR = D * 0.5;
 
       ctx.beginPath();
-      ctx.ellipse(
-        cx,
-        cy,
-        auraR * pulse,
-        auraR * pulse * 0.9,
-        t * 0.2,
-        0,
-        Math.PI * 2,
-      );
-      ctx.fillStyle = aura1;
+      ctx.arc(cx, cy, auraR, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(40, 60, 90, 0.05)";
       ctx.fill();
 
       /* ── 2. Outer hex ring ────────────────────────────────── */
+      /* ── 3. The Central Axis ─────────────────────────────── */
       const hexR = D * 0.44;
       const hexA = t * 0.12;
       ctx.beginPath();
@@ -93,7 +73,11 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
         const a = hexA + (i / 6) * Math.PI * 2;
         const x = cx + Math.cos(a) * hexR;
         const y = cy + Math.sin(a) * hexR;
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
       }
       ctx.closePath();
       ctx.strokeStyle = "rgba(99,179,255,0.12)";
@@ -107,15 +91,13 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
       const axisW = D * 0.038;
 
       const axisGrad = ctx.createLinearGradient(cx, axisY0, cx, axisY1);
-      axisGrad.addColorStop(0, "rgba(120,200,255,0)");
-      axisGrad.addColorStop(0.2, "rgba(120,200,255,0.9)");
-      axisGrad.addColorStop(0.5, "#ffffff");
-      axisGrad.addColorStop(0.8, "rgba(160,120,255,0.9)");
-      axisGrad.addColorStop(1, "rgba(160,120,255,0)");
+      axisGrad.addColorStop(0, "rgba(70,120,180,0.1)");
+      axisGrad.addColorStop(0.2, "rgba(70,120,180,0.8)");
+      axisGrad.addColorStop(0.5, "rgba(40,80,140,1)");
+      axisGrad.addColorStop(0.8, "rgba(70,120,180,0.8)");
+      axisGrad.addColorStop(1, "rgba(70,120,180,0.1)");
 
       ctx.save();
-      ctx.shadowColor = "rgba(100,160,255,0.6)";
-      ctx.shadowBlur = D * 0.12;
       ctx.beginPath();
       ctx.roundRect(cx - axisW / 2, axisY0, axisW, axisH, axisW / 2);
       ctx.fillStyle = axisGrad;
@@ -143,8 +125,6 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
         const endA = startA + arcAngle;
 
         ctx.save();
-        ctx.shadowColor = color1;
-        ctx.shadowBlur = D * 0.18;
         ctx.beginPath();
         ctx.arc(ox, oy, arcRadius, startA, endA);
         ctx.strokeStyle = color1;
@@ -173,12 +153,10 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
 
         const ex = ox + Math.cos((startA + endA) / 2) * arcRadius;
         const ey = oy + Math.sin((startA + endA) / 2) * arcRadius;
-        const dotPulse = 0.6 + 0.4 * Math.sin(t * 2 + (flip ? Math.PI : 0));
+
         ctx.save();
-        ctx.shadowColor = color1;
-        ctx.shadowBlur = D * 0.22;
         ctx.beginPath();
-        ctx.arc(ex, ey, D * 0.045 * dotPulse, 0, Math.PI * 2);
+        ctx.arc(ex, ey, D * 0.045, 0, Math.PI * 2);
         ctx.fillStyle = "#ffffff";
         ctx.fill();
         ctx.restore();
@@ -187,15 +165,15 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
       drawArc(
         cx - arcSpread,
         cy + swayL,
-        "rgba(56,189,248,0.7)",
-        "#7dd3fc",
+        "rgba(40,100,160,0.7)",
+        "#3B82F6",
         false,
       );
       drawArc(
         cx + arcSpread,
         cy + swayR,
-        "rgba(167,139,250,0.7)",
-        "#c4b5fd",
+        "rgba(70,90,140,0.7)",
+        "#4338CA",
         true,
       );
 
@@ -206,15 +184,13 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
         cx + arcSpread,
         cy,
       );
-      connGrad.addColorStop(0, "rgba(56,189,248,0)");
-      connGrad.addColorStop(0.3, "rgba(56,189,248,0.55)");
-      connGrad.addColorStop(0.5, "rgba(255,255,255,0.5)");
-      connGrad.addColorStop(0.7, "rgba(167,139,250,0.55)");
-      connGrad.addColorStop(1, "rgba(167,139,250,0)");
+      connGrad.addColorStop(0, "rgba(40,100,160,0)");
+      connGrad.addColorStop(0.3, "rgba(40,100,160,0.5)");
+      connGrad.addColorStop(0.5, "rgba(60,110,180,0.8)");
+      connGrad.addColorStop(0.7, "rgba(70,90,140,0.5)");
+      connGrad.addColorStop(1, "rgba(70,90,140,0)");
 
       ctx.save();
-      ctx.shadowColor = "rgba(160,180,255,0.4)";
-      ctx.shadowBlur = D * 0.08;
       ctx.beginPath();
       ctx.moveTo(cx - arcSpread - D * 0.02, cy);
       ctx.lineTo(cx + arcSpread + D * 0.02, cy);
@@ -224,33 +200,14 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
       ctx.restore();
 
       /* ── 6. Center node ──────────────────────────────────── */
-      const nodePulse = 0.7 + 0.3 * Math.sin(t * 1.6);
       ctx.save();
-      ctx.shadowColor = "rgba(180,200,255,0.9)";
-      ctx.shadowBlur = D * 0.22 * nodePulse;
       ctx.beginPath();
-      ctx.arc(cx, cy, D * 0.055 * nodePulse, 0, Math.PI * 2);
+      ctx.arc(cx, cy, D * 0.05, 0, Math.PI * 2);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
       ctx.restore();
 
-      /* ── 7. Particle sparks ──────────────────────────────── */
-      for (let i = 0; i < 3; i++) {
-        const pa = t * (0.6 + i * 0.3) + (i * Math.PI * 2) / 3;
-        const pr = D * (0.38 + 0.04 * Math.sin(t + i));
-        const px = cx + Math.cos(pa) * pr;
-        const py = cy + Math.sin(pa) * pr * 0.55;
-        const alpha = 0.3 + 0.4 * Math.sin(t * 1.5 + i);
-        const colors = [
-          "rgba(56,189,248,",
-          "rgba(255,255,255,",
-          "rgba(167,139,250,",
-        ];
-        ctx.beginPath();
-        ctx.arc(px, py, D * 0.028, 0, Math.PI * 2);
-        ctx.fillStyle = `${colors[i]}${alpha})`;
-        ctx.fill();
-      }
+      /* ── 7. Particle sparks (Removed for cleaner look) ────── */
 
       frame.current++;
       raf.current = requestAnimationFrame(draw);
@@ -268,12 +225,9 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
           .lai-root { display:inline-flex; align-items:center; user-select:none; }
           .lai-name {
             font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            background: linear-gradient(100deg, #7dd3fc 0%, #ffffff 45%, #c4b5fd 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: hsl(var(--foreground));
             line-height: 1;
           }
         `}</style>

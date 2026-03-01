@@ -16,7 +16,6 @@ import {
 } from "@/react-app/components/chat/ChatMessage";
 import { ChatInput } from "@/react-app/components/chat/ChatInput";
 import { TypingIndicator } from "@/react-app/components/chat/TypingIndicator";
-import { ThemeToggle } from "@/react-app/components/ThemeToggle";
 import { Button } from "@/react-app/components/ui/button";
 import type { Conversation } from "@/react-app/components/DashboardLayout";
 
@@ -157,7 +156,6 @@ export default function DashboardChatPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Button variant="ghost" size="icon" className="relative h-9 w-9">
             <BellIcon className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
@@ -186,9 +184,9 @@ export default function DashboardChatPage() {
                 <button
                   key={i}
                   onClick={() => handleSuggestedPrompt(prompt.text)}
-                  className="flex items-start gap-3 p-4 rounded-xl bg-muted/30 hover:bg-muted/50 border border-border/50 hover:border-primary/30 transition-all text-left"
+                  className="flex items-start gap-3 p-4 rounded-md bg-card border border-border/50 hover:border-slate-400 dark:hover:border-slate-600 transition-all text-left shadow-sm"
                 >
-                  <div className="flex-shrink-0 mt-0.5 text-primary">
+                  <div className="flex-shrink-0 mt-0.5 text-slate-500 dark:text-slate-400">
                     <prompt.Icon className="w-5 h-5" />
                   </div>
                   <div>
@@ -218,7 +216,7 @@ export default function DashboardChatPage() {
               <ChatMessage
                 key={message.id}
                 message={message}
-                onRegenerate={() => {}}
+                onRegenerate={() => { }}
               />
             ))}
             {isTyping && <TypingIndicator />}

@@ -145,9 +145,9 @@ export default function DashboardDocumentsPage() {
   const triggerFileInput = () => fileInputRef.current?.click();
 
   const statusColor = {
-    analyzed: "text-green-500 bg-green-500/10",
-    pending: "text-yellow-500 bg-yellow-500/10",
-    archived: "text-gray-500 bg-gray-500/10",
+    analyzed: "text-emerald-600 bg-emerald-500/10 dark:text-emerald-500 dark:bg-emerald-500/20",
+    pending: "text-amber-600 bg-amber-500/10 dark:text-amber-500 dark:bg-amber-500/20",
+    archived: "text-slate-500 bg-slate-500/10 dark:text-slate-400 dark:bg-slate-500/20",
   };
 
   const totalSize = documents.reduce((sum, doc) => sum + doc.size, 0);
@@ -162,7 +162,7 @@ export default function DashboardDocumentsPage() {
             Manage and organize your project documents
           </p>
         </div>
-        <Button className="glow-sm" onClick={triggerFileInput}>
+        <Button className="shadow-sm" onClick={triggerFileInput}>
           <PlusIcon className="w-4 h-4 mr-2" />
           Upload Document
         </Button>
@@ -177,8 +177,8 @@ export default function DashboardDocumentsPage() {
                 <p className="text-sm text-muted-foreground">Total Documents</p>
                 <p className="text-2xl font-bold mt-2">{documents.length}</p>
               </div>
-              <div className="p-2.5 rounded-xl bg-primary/10">
-                <ManuscriptIcon className="w-5 h-5 text-primary" />
+              <div className="p-2.5 rounded-md bg-slate-100 dark:bg-slate-800">
+                <ManuscriptIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
               </div>
             </div>
           </CardContent>
@@ -193,8 +193,8 @@ export default function DashboardDocumentsPage() {
                   {totalSize.toFixed(1)} MB
                 </p>
               </div>
-              <div className="p-2.5 rounded-xl bg-blue-500/10">
-                <StorageIcon className="w-5 h-5 text-blue-500" />
+              <div className="p-2.5 rounded-md bg-slate-100 dark:bg-slate-800">
+                <StorageIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
               </div>
             </div>
           </CardContent>
@@ -209,8 +209,8 @@ export default function DashboardDocumentsPage() {
                   {documents.filter((d) => d.status === "analyzed").length}
                 </p>
               </div>
-              <div className="p-2.5 rounded-xl bg-green-500/10">
-                <LensIcon className="w-5 h-5 text-green-500" />
+              <div className="p-2.5 rounded-md bg-slate-100 dark:bg-slate-800">
+                <LensIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
               </div>
             </div>
           </CardContent>
@@ -219,9 +219,8 @@ export default function DashboardDocumentsPage() {
 
       {/* Upload Zone */}
       <Card
-        className={`bg-card/50 backdrop-blur border-border/50 border-2 border-dashed transition-colors cursor-pointer ${
-          dragActive ? "border-primary bg-primary/5" : ""
-        }`}
+        className={`bg-card/50 backdrop-blur border-border/50 border-2 border-dashed transition-colors cursor-pointer hover:border-slate-400 dark:hover:border-slate-600 ${dragActive ? "border-slate-500 bg-slate-500/5" : ""
+          }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -230,17 +229,18 @@ export default function DashboardDocumentsPage() {
       >
         <CardContent className="p-8">
           <div className="flex flex-col items-center justify-center gap-4">
-            <div className="p-4 rounded-xl bg-primary/10">
-              <UploadIcon className="w-8 h-8 text-primary" />
+            <div className="p-4 rounded-md bg-slate-100 dark:bg-slate-800">
+              <UploadIcon className="w-8 h-8 text-slate-600 dark:text-slate-400" />
             </div>
             <div className="text-center">
-              <p className="font-semibold">Drag and drop files here</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-semibold text-foreground">Drag and drop files here</p>
+              <p className="text-sm text-muted-foreground mt-1">
                 or click to select documents (PDF, Word, Excel, CSV, TXT)
               </p>
             </div>
             <Button
               variant="outline"
+              className="mt-2 text-sm shadow-sm"
               onClick={(e) => {
                 e.stopPropagation();
                 triggerFileInput();
@@ -318,8 +318,8 @@ export default function DashboardDocumentsPage() {
                   className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors group"
                 >
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                      <ManuscriptIcon className="w-5 h-5 text-primary" />
+                    <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 flex-shrink-0 border border-slate-200 dark:border-slate-700">
+                      <ManuscriptIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{doc.name}</p>
@@ -337,7 +337,7 @@ export default function DashboardDocumentsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColor[doc.status]}`}
+                      className={`text-xs font-medium px-2.5 py-1 rounded-md ${statusColor[doc.status]}`}
                     >
                       {doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}
                     </span>

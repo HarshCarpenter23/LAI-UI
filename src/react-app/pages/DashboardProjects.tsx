@@ -44,13 +44,13 @@ import {
 function getStatusColor(status: string) {
   switch (status) {
     case "active":
-      return "bg-blue-500/10 text-blue-600 border-blue-200";
+      return "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-500 dark:border-amber-500/30";
     case "completed":
-      return "bg-green-500/10 text-green-600 border-green-200";
+      return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-500 dark:border-emerald-500/30";
     case "archived":
-      return "bg-gray-500/10 text-gray-600 border-gray-200";
+      return "bg-slate-500/10 text-slate-600 border-slate-500/20 dark:text-slate-400 dark:border-slate-500/30";
     default:
-      return "bg-gray-500/10 text-gray-600 border-gray-200";
+      return "bg-slate-500/10 text-slate-600 border-slate-500/20 dark:text-slate-400 dark:border-slate-500/30";
   }
 }
 
@@ -164,33 +164,33 @@ export default function DashboardProjectsPage() {
       p.map((x) =>
         x.id === projectId
           ? {
-              ...x,
-              conversations: x.conversations.map((c) =>
-                c.id === conversationId
-                  ? {
-                      ...c,
-                      lastMessage: userMsg,
-                      timestamp: "Just now",
-                      messages: [
-                        ...c.messages,
-                        {
-                          id: Date.now().toString(),
-                          message: userMsg,
-                          sender: "user" as const,
-                          timestamp: timeStr,
-                          attachments,
-                        },
-                        {
-                          id: (Date.now() + 1).toString(),
-                          message: aiResponse,
-                          sender: "assistant" as const,
-                          timestamp: timeStr,
-                        },
-                      ],
-                    }
-                  : c,
-              ),
-            }
+            ...x,
+            conversations: x.conversations.map((c) =>
+              c.id === conversationId
+                ? {
+                  ...c,
+                  lastMessage: userMsg,
+                  timestamp: "Just now",
+                  messages: [
+                    ...c.messages,
+                    {
+                      id: Date.now().toString(),
+                      message: userMsg,
+                      sender: "user" as const,
+                      timestamp: timeStr,
+                      attachments,
+                    },
+                    {
+                      id: (Date.now() + 1).toString(),
+                      message: aiResponse,
+                      sender: "assistant" as const,
+                      timestamp: timeStr,
+                    },
+                  ],
+                }
+                : c,
+            ),
+          }
           : x,
       ),
     );
@@ -227,7 +227,7 @@ export default function DashboardProjectsPage() {
             Manage your wind energy due diligence projects
           </p>
         </div>
-        <Button className="glow-sm" onClick={() => setShowCreateModal(true)}>
+        <Button className="shadow-sm" onClick={() => setShowCreateModal(true)}>
           <PlusIcon className="w-4 h-4 mr-2" />
           New Project
         </Button>
@@ -239,22 +239,22 @@ export default function DashboardProjectsPage() {
             label: "Total Projects",
             value: projects.length,
             Icon: NewFolderIcon,
-            iconClass: "text-primary",
-            bgClass: "bg-primary/10",
+            iconClass: "text-slate-600 dark:text-slate-400",
+            bgClass: "bg-slate-100 dark:bg-slate-800",
           },
           {
             label: "Active Projects",
             value: projects.filter((p) => p.status === "active").length,
             Icon: AlertRingIcon,
-            iconClass: "text-blue-500",
-            bgClass: "bg-blue-500/10",
+            iconClass: "text-amber-600 dark:text-amber-500",
+            bgClass: "bg-amber-500/10",
           },
           {
             label: "Completed",
             value: projects.filter((p) => p.status === "completed").length,
             Icon: CheckRingIcon,
-            iconClass: "text-green-500",
-            bgClass: "bg-green-500/10",
+            iconClass: "text-emerald-600 dark:text-emerald-500",
+            bgClass: "bg-emerald-500/10",
           },
         ].map(({ label, value, Icon, iconClass, bgClass }) => (
           <Card
@@ -267,7 +267,7 @@ export default function DashboardProjectsPage() {
                   <p className="text-sm text-muted-foreground">{label}</p>
                   <p className="text-2xl font-bold mt-2">{value}</p>
                 </div>
-                <div className={`p-2.5 rounded-xl ${bgClass}`}>
+                <div className={`p-2.5 rounded-md ${bgClass}`}>
                   <Icon className={`w-5 h-5 ${iconClass}`} />
                 </div>
               </div>
@@ -326,11 +326,11 @@ export default function DashboardProjectsPage() {
               <CardHeader className="pb-3 flex flex-row items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <CaseFolderIcon className="w-5 h-5 text-primary" />
+                    <CaseFolderIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                     <CardTitle className="text-lg">{project.name}</CardTitle>
                   </div>
                   <span
-                    className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full mt-2 border ${getStatusColor(project.status)}`}
+                    className={`inline-block text-xs font-medium px-2.5 py-1 rounded-md mt-2 border ${getStatusColor(project.status)}`}
                   >
                     {project.status}
                   </span>

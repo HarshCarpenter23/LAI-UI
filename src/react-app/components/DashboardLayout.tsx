@@ -13,6 +13,7 @@ import {
   PanelCollapseIcon,
   PanelExpandIcon,
 } from "@/react-app/components/icons";
+import { ThemeToggle } from "@/react-app/components/ThemeToggle";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", symbol: "⌂" },
@@ -113,14 +114,13 @@ export default function DashboardLayout() {
     >
       {/* ── Sidebar ── */}
       <aside
-        className={`flex-shrink-0 h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 z-40 ${
-          collapsed ? "w-16" : "w-64"
-        }`}
+        className={`flex-shrink-0 h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300 z-40 ${collapsed ? "w-16" : "w-64"
+          }`}
       >
         {/* ── Logo + Collapse ── */}
         <div className="flex flex-col border-b border-sidebar-border">
           <div
-            className={`h-16 flex items-center ${collapsed ? "justify-center px-3" : "px-4"}`}
+            className={`h-16 flex items-center ${collapsed ? "justify-center px-3" : "justify-between px-4"}`}
           >
             {collapsed ? (
               <div
@@ -130,7 +130,10 @@ export default function DashboardLayout() {
                 <Logo size="sm" />
               </div>
             ) : (
-              <Logo size="sm" />
+              <>
+                <Logo size="sm" />
+                <ThemeToggle />
+              </>
             )}
           </div>
 
@@ -138,11 +141,10 @@ export default function DashboardLayout() {
           <div className="px-3 pb-2">
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className={`flex items-center gap-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent transition-colors ${
-                collapsed
-                  ? "w-10 h-10 justify-center mx-auto"
-                  : "w-full px-3 py-2.5"
-              }`}
+              className={`flex items-center gap-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-sidebar-accent transition-colors ${collapsed
+                ? "w-10 h-10 justify-center mx-auto"
+                : "w-full px-3 py-2.5"
+                }`}
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? (
@@ -170,34 +172,30 @@ export default function DashboardLayout() {
               key={item.name}
               to={item.href}
               title={item.name}
-              className={`flex items-center rounded-xl text-sm font-medium transition-all ${
-                isActive(item.href)
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent"
-              } ${
-                collapsed
+              className={`flex items-center rounded-md text-sm font-medium transition-all ${isActive(item.href)
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "text-sidebar-foreground hover:bg-sidebar-accent"
+                } ${collapsed
                   ? "justify-center w-10 h-10 mx-auto"
                   : "gap-3 px-3 py-2.5"
-              }`}
+                }`}
             >
               {collapsed ? (
                 <span
-                  className={`text-xl leading-none select-none ${
-                    isActive(item.href)
-                      ? "text-primary-foreground"
-                      : "text-muted-foreground"
-                  }`}
+                  className={`text-xl leading-none select-none ${isActive(item.href)
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground"
+                    }`}
                 >
                   {item.symbol}
                 </span>
               ) : (
                 <>
                   <span
-                    className={`text-lg leading-none select-none w-6 text-center flex-shrink-0 ${
-                      isActive(item.href)
-                        ? "text-primary-foreground"
-                        : "text-muted-foreground"
-                    }`}
+                    className={`text-lg leading-none select-none w-6 text-center flex-shrink-0 ${isActive(item.href)
+                      ? "text-primary-foreground"
+                      : "text-muted-foreground"
+                      }`}
                   >
                     {item.symbol}
                   </span>
@@ -221,34 +219,30 @@ export default function DashboardLayout() {
               key={item.name}
               to={item.href}
               title={item.name}
-              className={`flex items-center rounded-xl text-sm font-medium transition-all ${
-                isActive(item.href)
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent"
-              } ${
-                collapsed
+              className={`flex items-center rounded-md text-sm font-medium transition-all ${isActive(item.href)
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "text-sidebar-foreground hover:bg-sidebar-accent"
+                } ${collapsed
                   ? "justify-center w-10 h-10 mx-auto"
                   : "gap-3 px-3 py-2.5"
-              }`}
+                }`}
             >
               {collapsed ? (
                 <span
-                  className={`text-xl leading-none select-none ${
-                    isActive(item.href)
-                      ? "text-primary-foreground"
-                      : "text-muted-foreground"
-                  }`}
+                  className={`text-xl leading-none select-none ${isActive(item.href)
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground"
+                    }`}
                 >
                   {item.symbol}
                 </span>
               ) : (
                 <>
                   <span
-                    className={`text-lg leading-none select-none w-6 text-center flex-shrink-0 ${
-                      isActive(item.href)
-                        ? "text-primary-foreground"
-                        : "text-muted-foreground"
-                    }`}
+                    className={`text-lg leading-none select-none w-6 text-center flex-shrink-0 ${isActive(item.href)
+                      ? "text-primary-foreground"
+                      : "text-muted-foreground"
+                      }`}
                   >
                     {item.symbol}
                   </span>
@@ -268,7 +262,7 @@ export default function DashboardLayout() {
                 {/* FIX 3: calls handleNewChat which creates a real conversation */}
                 <button
                   onClick={handleNewChat}
-                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent transition-all"
+                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent transition-all"
                 >
                   <span className="text-primary font-bold text-base leading-none">
                     +
@@ -279,11 +273,10 @@ export default function DashboardLayout() {
                 {conversations.map((conv) => (
                   <div
                     key={conv.id}
-                    className={`group flex items-start gap-2 px-3 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
-                      activeConversationId === conv.id
-                        ? "bg-primary/10 hover:bg-primary/20"
-                        : "hover:bg-sidebar-accent"
-                    }`}
+                    className={`group flex items-start gap-2 px-3 py-2.5 rounded-md text-xs transition-all cursor-pointer ${activeConversationId === conv.id
+                      ? "bg-primary/10 hover:bg-primary/20"
+                      : "hover:bg-sidebar-accent"
+                      }`}
                     onClick={() => setActiveConversationId(conv.id)}
                   >
                     <div className="flex-1 min-w-0">
@@ -332,17 +325,16 @@ export default function DashboardLayout() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className={`flex items-center gap-3 w-full p-2 rounded-xl hover:bg-sidebar-accent transition-colors ${
-                  collapsed ? "justify-center" : ""
-                }`}
+                className={`flex items-center gap-3 w-full p-2 rounded-md hover:bg-sidebar-accent transition-colors ${collapsed ? "justify-center" : ""
+                  }`}
               >
-                <Avatar className="w-9 h-9 border-2 border-primary/20">
-                  <AvatarFallback className="bg-gradient-to-br from-primary to-indigo-600 text-white text-sm font-semibold">
+                <Avatar className="w-9 h-9 border-2 border-slate-200 dark:border-slate-700">
+                  <AvatarFallback className="bg-slate-800 text-slate-100 text-sm font-semibold dark:bg-slate-700 dark:text-slate-200">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
                 {!collapsed && (
-                  <div className="flex-1 text-left">
+                  <div className="flex-1 text-left min-w-0">
                     <p className="text-sm font-medium truncate">
                       {user?.email || "User"}
                     </p>
@@ -367,9 +359,8 @@ export default function DashboardLayout() {
 
       {/* ── Main Content ── */}
       <main
-        className={`flex-1 min-w-0 h-full ${
-          isOnChatPage ? "overflow-hidden" : "overflow-auto p-6"
-        }`}
+        className={`flex-1 min-w-0 h-full ${isOnChatPage ? "overflow-hidden" : "overflow-auto p-6"
+          }`}
       >
         <Outlet
           context={{

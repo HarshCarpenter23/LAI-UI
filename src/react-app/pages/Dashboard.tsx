@@ -8,51 +8,52 @@ import {
 import { Button } from "@/react-app/components/ui/button";
 import { Progress } from "@/react-app/components/ui/progress";
 import {
-  ManuscriptIcon,
-  ConsultIcon,
-  SignalTowerIcon,
-  TrendUpIcon,
-  AlertIcon,
-  CheckRingIcon,
-  DangerRingIcon,
-  ArrowUpRightIcon,
-  CircuitBoltIcon,
-  WindRoseIcon,
-  PlusIcon,
-} from "@/react-app/components/icons";
+  FileText,
+  FolderOpen,
+  MessageSquare,
+  ShieldCheck,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  ArrowUpRight,
+  Zap,
+  Plus,
+  Upload,
+} from "lucide-react";
 
 const stats = [
   {
     title: "Documents Analyzed",
     value: "1,284",
     change: "+12%",
-    icon: ManuscriptIcon,
-    color: "text-primary",
-    bgColor: "bg-primary/10",
+    icon: FileText,
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-950/50",
   },
   {
     title: "Active Projects",
     value: "8",
     change: "+2",
-    icon: WindRoseIcon,
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-500/10",
+    icon: FolderOpen,
+    color: "text-violet-600 dark:text-violet-400",
+    bgColor: "bg-violet-50 dark:bg-violet-950/50",
   },
   {
     title: "AI Conversations",
     value: "342",
     change: "+28%",
-    icon: ConsultIcon,
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
+    icon: MessageSquare,
+    color: "text-emerald-600 dark:text-emerald-400",
+    bgColor: "bg-emerald-50 dark:bg-emerald-950/50",
   },
   {
     title: "Risk Assessments",
     value: "56",
     change: "+5",
-    icon: SignalTowerIcon,
-    color: "text-amber-500",
-    bgColor: "bg-amber-500/10",
+    icon: ShieldCheck,
+    color: "text-amber-600 dark:text-amber-400",
+    bgColor: "bg-amber-50 dark:bg-amber-950/50",
   },
 ];
 
@@ -82,21 +83,21 @@ const recentProjects = [
 
 const riskIndicator = {
   low: {
-    color: "text-green-500",
-    bg: "bg-green-500/10",
-    Icon: CheckRingIcon,
+    color: "text-emerald-600 dark:text-emerald-500",
+    bg: "bg-emerald-500/10",
+    Icon: CheckCircle2,
     label: "Low Risk",
   },
   medium: {
-    color: "text-yellow-500",
-    bg: "bg-yellow-500/10",
-    Icon: AlertIcon,
+    color: "text-amber-600 dark:text-amber-500",
+    bg: "bg-amber-500/10",
+    Icon: AlertTriangle,
     label: "Medium Risk",
   },
   high: {
-    color: "text-red-500",
-    bg: "bg-red-500/10",
-    Icon: DangerRingIcon,
+    color: "text-rose-600 dark:text-rose-500",
+    bg: "bg-rose-500/10",
+    Icon: XCircle,
     label: "High Risk",
   },
 };
@@ -106,25 +107,25 @@ const recentActivity = [
     action: "Document uploaded",
     item: "permit_application_2024.pdf",
     time: "5 min ago",
-    Icon: ManuscriptIcon,
+    Icon: Upload,
   },
   {
     action: "AI analysis completed",
     item: "Environmental impact report",
     time: "23 min ago",
-    Icon: CircuitBoltIcon,
+    Icon: Zap,
   },
   {
     action: "Risk flagged",
     item: "Land lease agreement clause 4.2",
     time: "1 hour ago",
-    Icon: AlertIcon,
+    Icon: AlertTriangle,
   },
   {
     action: "Project created",
     item: "Baltic Offshore Expansion",
     time: "3 hours ago",
-    Icon: WindRoseIcon,
+    Icon: FolderOpen,
   },
 ];
 
@@ -140,8 +141,8 @@ export default function DashboardPage() {
           </p>
         </div>
         <Link to="/dashboard/chat">
-          <Button className="glow-sm">
-            <PlusIcon className="w-4 h-4 mr-2" />
+          <Button className="shadow-sm">
+            <Plus className="w-4 h-4 mr-2" />
             New Chat
           </Button>
         </Link>
@@ -156,11 +157,11 @@ export default function DashboardPage() {
           >
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
-                <div className={`p-2.5 rounded-xl ${stat.bgColor}`}>
+                <div className={`p-2.5 rounded-lg ${stat.bgColor}`}>
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
-                <div className="flex items-center gap-1 text-xs font-medium text-green-500">
-                  <TrendUpIcon className="w-3 h-3" />
+                <div className="flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-500">
+                  <TrendingUp className="w-3 h-3" />
                   {stat.change}
                 </div>
               </div>
@@ -184,7 +185,7 @@ export default function DashboardPage() {
               <Link to="/dashboard/projects">
                 <Button variant="ghost" size="sm" className="text-primary">
                   View all
-                  <ArrowUpRightIcon className="w-4 h-4 ml-1" />
+                  <ArrowUpRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
             </CardHeader>
@@ -195,7 +196,7 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={project.name}
-                    className="p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+                    className="p-4 rounded-md bg-muted/30 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div>
@@ -258,26 +259,26 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="bg-gradient-to-r from-primary/10 via-indigo-500/10 to-blue-500/10 border-primary/20">
+      <Card className="bg-slate-900 border-slate-800 text-white shadow-sm">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-primary/20">
-                <CircuitBoltIcon className="w-6 h-6 text-primary" />
+              <div className="p-3 rounded-md bg-slate-800 border border-slate-700">
+                <Zap className="w-6 h-6 text-slate-300" />
               </div>
               <div>
                 <h3 className="font-semibold">Quick Due Diligence</h3>
-                <p className="text-sm text-muted-foreground">
-                  Upload documents and get AI analysis in minutes
+                <p className="text-sm text-slate-400">
+                  Upload documents and get precision AI analysis in minutes
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Link to="/dashboard/documents">
-                <Button variant="outline">Upload Documents</Button>
+                <Button variant="outline" className="border-slate-700 hover:bg-slate-800 bg-slate-900 text-slate-300">Upload Documents</Button>
               </Link>
               <Link to="/dashboard/chat">
-                <Button className="glow-sm">Start AI Chat</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm border-0">Start AI Chat</Button>
               </Link>
             </div>
           </div>

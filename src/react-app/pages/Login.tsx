@@ -43,162 +43,133 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Left Panel — Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-indigo-500/10 to-blue-500/20" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="fixed top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          <Link to="/">
+      <div className="w-full max-w-md relative z-10 space-y-8">
+        <div className="text-center space-y-6">
+          <Link to="/" className="inline-block">
             <Logo size="lg" />
           </Link>
-          <div className="space-y-6">
-            <h1 className="text-4xl font-bold">
-              Welcome back to
-              <span className="block text-gradient mt-2">Legal AI</span>
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-md">
-              Continue transforming your wind energy due diligence with
-              AI-powered legal analysis.
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+            <p className="text-muted-foreground text-sm">
+              Secures access to your legal AI dashboard
             </p>
-            <div className="flex items-center gap-4 pt-4">
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/80 to-indigo-600 border-2 border-background flex items-center justify-center text-xs font-medium text-white"
-                  >
-                    {String.fromCharCode(64 + i)}
-                  </div>
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">500+</span>{" "}
-                legal professionals trust LAI
-              </p>
-            </div>
           </div>
         </div>
+
+        <div className="bg-card border border-border/50 shadow-sm p-8 rounded-md space-y-6">
+          {error && (
+            <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20 text-red-600 text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-4">
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="font-medium text-xs uppercase tracking-wider text-muted-foreground">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <EnvelopeIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="name@firm.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-11 h-11 rounded-md bg-background border-input focus-visible:ring-1 focus-visible:ring-primary shadow-sm"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="font-medium text-xs uppercase tracking-wider text-muted-foreground">
+                    Password
+                  </Label>
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <PadlockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-11 pr-11 h-11 rounded-md bg-background border-input focus-visible:ring-1 focus-visible:ring-primary shadow-sm"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? (
+                      <LensOffIcon className="w-4 h-4" />
+                    ) : (
+                      <LensIcon className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <Checkbox
+                id="remember"
+                checked={rememberMe}
+                onCheckedChange={(c: boolean | "indeterminate") => setRememberMe(c === true)}
+              />
+              <Label
+                htmlFor="remember"
+                className="text-sm font-normal text-muted-foreground cursor-pointer"
+              >
+                Keep me signed in
+              </Label>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-11 text-sm font-semibold rounded-md shadow-sm bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
+              disabled={isLoading}
+            >
+              {isLoading ? "Verifying..." : "Sign in"}
+              {!isLoading && <ArrowRightIcon className="ml-2 w-4 h-4" />}
+            </Button>
+          </form>
+        </div>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Don't have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-primary hover:underline font-medium"
+          >
+            Create account
+          </Link>
+        </p>
       </div>
 
-      {/* Right Panel — Form */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex items-center justify-between p-6">
-          <Link to="/" className="lg:hidden">
-            <Logo size="sm" />
-          </Link>
-          <div className="flex items-center gap-4 ml-auto">
-            <ThemeToggle />
-            <span className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link
-                to="/signup"
-                className="text-primary hover:underline font-medium"
-              >
-                Sign up
-              </Link>
-            </span>
-          </div>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="w-full max-w-md space-y-8">
-            <div className="text-center lg:text-left">
-              <h2 className="text-2xl font-bold">Sign in to your account</h2>
-              <p className="text-muted-foreground mt-2">
-                Enter your credentials to access your dashboard
-              </p>
-            </div>
-
-            {error && (
-              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-600 text-sm">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-4">
-                {/* Email */}
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email address</Label>
-                  <div className="relative">
-                    <EnvelopeIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="name@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-11 h-12 rounded-xl"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link
-                      to="/forgot-password"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <div className="relative">
-                    <PadlockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-11 pr-11 h-12 rounded-xl"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? (
-                        <LensOffIcon className="w-4 h-4" />
-                      ) : (
-                        <LensIcon className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="remember"
-                  checked={rememberMe}
-                  onCheckedChange={(c) => setRememberMe(c as boolean)}
-                />
-                <Label
-                  htmlFor="remember"
-                  className="text-sm font-normal cursor-pointer"
-                >
-                  Remember me for 30 days
-                </Label>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-12 text-base glow-sm"
-                disabled={isLoading}
-              >
-                {isLoading ? "Signing in..." : "Sign in"}
-                <ArrowRightIcon className="ml-2 w-4 h-4" />
-              </Button>
-            </form>
-          </div>
-        </div>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6 opacity-60">
+        <span className="text-xs text-muted-foreground font-medium uppercase tracking-widest">
+          &copy; 2026 Legal AI
+        </span>
       </div>
     </div>
   );

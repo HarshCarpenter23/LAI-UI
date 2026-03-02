@@ -18,7 +18,7 @@ import { ChatInput } from "@/react-app/components/chat/ChatInput";
 import { TypingIndicator } from "@/react-app/components/chat/TypingIndicator";
 import { Button } from "@/react-app/components/ui/button";
 import type { Conversation } from "@/react-app/components/DashboardLayout";
-import { queryRAG } from "@/react-app/lib/ragApi"; // ← NEW
+import { queryRAG, uploadDocument } from "@/react-app/lib/ragApi";
 
 const suggestedPrompts = [
   {
@@ -58,6 +58,7 @@ export default function DashboardChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
@@ -115,7 +116,36 @@ export default function DashboardChatPage() {
     setTimeout(() => forceScrollToBottom("smooth"), 0);
 
     try {
-      const result = await queryRAG(content, sessionId);
+      let currentSessionId = sessionId;
+
+      // Upload PDF attachments first
+      const pdfAttachments = attachments.filter(
+        (a) => a.file && a.file.name.toLowerCase().endsWith(".pdf")
+      );
+
+      if (pdfAttachments.length > 0) {
+        setIsUploading(true);
+        for (const attachment of pdfAttachments) {
+          if (attachment.file) {
+            const uploadResult = await uploadDocument(attachment.file, currentSessionId);
+            currentSessionId = uploadResult.session_id;
+            setSessionId(currentSessionId);
+
+            // Show upload success message
+            const uploadMessage: ChatMessageData = {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              content: `📄 **Document uploaded:** ${uploadResult.filename}\n- Pages: ${uploadResult.pages}\n- Chunks: ${uploadResult.chunks}\n\nYou can now ask questions about this document.`,
+              timestamp: new Date(),
+            };
+            setMessages((prev) => [...prev, uploadMessage]);
+          }
+        }
+        setIsUploading(false);
+      }
+
+      // Now query with the question
+      const result = await queryRAG(content, currentSessionId);
 
       // Store session_id for conversation continuity
       if (result.session_id) {
@@ -131,6 +161,7 @@ export default function DashboardChatPage() {
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (err: unknown) {
+      setIsUploading(false);
       // Show the error as an assistant message so it's visible in chat
       const errorMessage: ChatMessageData = {
         id: crypto.randomUUID(),
@@ -250,8 +281,8 @@ export default function DashboardChatPage() {
         <div className="max-w-4xl mx-auto w-full px-4 py-4">
           <ChatInput
             onSend={handleSendMessage}
-            disabled={isTyping}
-            placeholder="Ask LAI about permits, contracts, or upload documents..."
+            disabled={isTyping || isUploading}
+            placeholder={isUploading ? "Uploading document..." : "Ask LAI about permits, contracts, or upload documents..."}
             inputRef={inputRef}
           />
         </div>

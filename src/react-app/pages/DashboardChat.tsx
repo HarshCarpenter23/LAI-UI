@@ -18,12 +18,7 @@ import { ChatInput } from "@/react-app/components/chat/ChatInput";
 import { TypingIndicator } from "@/react-app/components/chat/TypingIndicator";
 import { Button } from "@/react-app/components/ui/button";
 import type { Conversation } from "@/react-app/components/DashboardLayout";
-
-const mockResponses = [
-  "I've analyzed the documents you uploaded. Here are the key findings for the wind energy due diligence:\n\n**Permit Status (BImSchG)**\n• The permit was issued on March 15, 2023 and is currently valid\n• Environmental impact assessment completed with minor conditions\n• Building permit aligned with local zoning requirements\n\n**Identified Risks**\n1. **Medium Risk**: Clause 4.2 of the land lease allows early termination with 12-month notice\n2. **Low Risk**: Grid connection agreement expires in 2035, requires renewal\n3. **High Risk**: Missing documentation for aviation lighting compliance\n\nWould you like me to elaborate on any of these findings?",
-  "Based on my analysis of the environmental impact assessment:\n\n**Wildlife Protection Measures**\n• Bat activity monitoring required during peak seasons (April-October)\n• Bird collision prevention shutdowns implemented during migration periods\n• Compensatory measures for habitat displacement are compliant\n\n**Compliance Status**: The project meets current BNatSchG requirements, but I recommend reviewing the latest amendments to ensure continued compliance.\n\nShall I generate a detailed risk matrix for these environmental factors?",
-  "I've reviewed the grid connection agreement (Einspeisezusage) with the following observations:\n\n**Key Terms**\n• Connection capacity: 45 MW at 110 kV level\n• Feed-in priority: Standard renewable energy priority applies\n• Duration: Valid until December 31, 2035\n\n**Risk Assessment**\n🟢 **Low Risk**: Current capacity allocation is sufficient\n🟡 **Medium Risk**: Renewal negotiations should begin by 2033\n🔴 **High Risk**: No backup connection agreement exists\n\nI recommend adding this to your due diligence checklist.",
-];
+import { queryRAG } from "@/react-app/lib/ragApi"; // ← NEW
 
 const suggestedPrompts = [
   {
@@ -66,7 +61,6 @@ export default function DashboardChatPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const responseIndexRef = useRef(0);
 
   const activeConversation = conversations?.find(
     (c) => c.id === activeConversationId,
@@ -97,11 +91,11 @@ export default function DashboardChatPage() {
 
   useEffect(() => {
     setMessages([]);
-    responseIndexRef.current = 0;
     setShowScrollBtn(false);
   }, [activeConversationId]);
 
   // ── Send message ──────────────────────────────────────────────────────────
+  // CHANGED: replaced mock timeout + mockResponses with real queryRAG() call
   const handleSendMessage = async (
     content: string,
     attachments: ChatAttachment[],
@@ -118,21 +112,30 @@ export default function DashboardChatPage() {
     setIsTyping(true);
     setTimeout(() => forceScrollToBottom("smooth"), 0);
 
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1500 + Math.random() * 1500),
-    );
+    try {
+      const result = await queryRAG(content);
 
-    const aiMessage: ChatMessageData = {
-      id: crypto.randomUUID(),
-      role: "assistant",
-      content: mockResponses[responseIndexRef.current % mockResponses.length],
-      timestamp: new Date(),
-    };
-    responseIndexRef.current++;
+      const aiMessage: ChatMessageData = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: result.answer,
+        timestamp: new Date(),
+      };
 
-    setIsTyping(false);
-    setMessages((prev) => [...prev, aiMessage]);
-    setTimeout(() => inputRef.current?.focus(), 50);
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (err: unknown) {
+      // Show the error as an assistant message so it's visible in chat
+      const errorMessage: ChatMessageData = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: `⚠️ **Error:** ${err instanceof Error ? err.message : "Could not reach the backend. Make sure the API server is running on the SSH server."}`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
   };
 
   const handleSuggestedPrompt = (prompt: string) =>
@@ -216,7 +219,7 @@ export default function DashboardChatPage() {
               <ChatMessage
                 key={message.id}
                 message={message}
-                onRegenerate={() => { }}
+                onRegenerate={() => {}}
               />
             ))}
             {isTyping && <TypingIndicator />}

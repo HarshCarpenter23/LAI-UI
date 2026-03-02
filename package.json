@@ -25,6 +25,7 @@
     "@types/react-dom": "19.0.4",
     "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.21",
+    "cross-env": "^10.1.0",
     "eslint": "9.25.1",
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.4.19",
@@ -42,7 +43,7 @@
     "build": "tsc -b && vite build",
     "cf-typegen": "wrangler types",
     "check": "tsc && vite build && wrangler deploy --dry-run",
-    "dev": "NODE_OPTIONS=--no-deprecation vite",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation vite",
     "knip": "knip",
     "lint": "eslint ."
   }

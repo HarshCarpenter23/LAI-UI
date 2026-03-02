@@ -260,7 +260,9 @@ export default function DashboardChatPage() {
                 onRegenerate={() => {}}
               />
             ))}
-            {isTyping && <TypingIndicator />}
+            {(isTyping || isUploading) && (
+              <TypingIndicator message={isUploading ? "Uploading document..." : "LAI is thinking..."} />
+            )}
             <div ref={bottomAnchorRef} style={{ height: 1 }} />
           </div>
         )}

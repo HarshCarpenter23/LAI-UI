@@ -27,13 +27,14 @@ export interface RAGResponse {
     prompt: number;
     completion: number;
   };
+  session_id: string;
 }
 
-export async function queryRAG(question: string): Promise<RAGResponse> {
+export async function queryRAG(question: string, sessionId: string | null = null): Promise<RAGResponse> {
   const res = await fetch(`${BACKEND_URL}/query`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify({ question, session_id: sessionId }),
   });
 
   if (!res.ok) {

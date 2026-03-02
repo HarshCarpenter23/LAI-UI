@@ -57,6 +57,7 @@ export default function DashboardChatPage() {
   const [messages, setMessages] = useState<ChatMessageData[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
@@ -92,6 +93,7 @@ export default function DashboardChatPage() {
   useEffect(() => {
     setMessages([]);
     setShowScrollBtn(false);
+    setSessionId(null);
   }, [activeConversationId]);
 
   // ── Send message ──────────────────────────────────────────────────────────
@@ -113,7 +115,12 @@ export default function DashboardChatPage() {
     setTimeout(() => forceScrollToBottom("smooth"), 0);
 
     try {
-      const result = await queryRAG(content);
+      const result = await queryRAG(content, sessionId);
+
+      // Store session_id for conversation continuity
+      if (result.session_id) {
+        setSessionId(result.session_id);
+      }
 
       const aiMessage: ChatMessageData = {
         id: crypto.randomUUID(),

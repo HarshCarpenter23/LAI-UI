@@ -1,6 +1,6 @@
 // src/react-app/lib/ragApi.ts
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://192.168.178.82:8000";
 
 export interface Chunk {
   text: string;
